@@ -1,4 +1,4 @@
-import { randomSample } from "../../helper.ts";
+import { randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
 
 interface QuestionInterface {
@@ -17,19 +17,32 @@ const get_session_entry = (q: QuestionInterface) => {
   return [q.question, options, options[q.ans], option_ids, option_ids[q.ans]];
 };
 
+const is_valid_question = (q: QuestionInterface): boolean => {
+  return (
+    q.question.length < 100 &&
+    q.A.length < 100 &&
+    q.B.length < 100 &&
+    q.C.length < 10 &&
+    q.D.length < 100
+  );
+};
+
 export const chat_gpt_handler = async (
-  max_per_day: number
+  number_of_questions: number
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data, error } = await supabase.from("chatgpt").select("*");
   if (error) console.log(error);
 
-  const chosen_questions: QuestionInterface[] = randomSample(
-    data!,
-    max_per_day
-  );
+  const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
+  const questions = [];
 
-  return chosen_questions.map((ques: QuestionInterface) =>
-    get_session_entry(ques)
-  );
+  let index = 0;
+  while (questions.length < number_of_questions) {
+    if (is_valid_question(shuffled_questions[index]))
+      questions.push(get_session_entry(shuffled_questions[index]));
+    index++;
+  }
+
+  return questions;
 };
