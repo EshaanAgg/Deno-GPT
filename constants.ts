@@ -38,6 +38,7 @@ export const decks: { [key: string]: [string, string, string][] } = {
       "description",
     ],
   ],
+  chat_gpt: [],
 };
 
 export const allDecks = [

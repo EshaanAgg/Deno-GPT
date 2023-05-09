@@ -4,6 +4,7 @@ import supabase from "../supabaseClient.ts";
 import { pollCreator } from "./poll_creator.ts";
 import { customContext, chatDescription } from "../types.ts";
 import { default_handler } from "./deck_handlers/default_handler.ts";
+import { chat_gpt_handler } from "./deck_handlers/chat_gpt_handler.ts";
 
 export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   ctx.session.chatDescription = [0, "", [], 0, 0, 0] as chatDescription;
@@ -12,14 +13,14 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   if (deck === "") deck = randomChoice(allDecks);
 
   let max_per_day = MAX_PER_DAY;
-  const response1 = await supabase.from("max_per_day").select("*");
-  if (response1.data) max_per_day = response1.data[0]["max_per_day"];
-  if (response1.error) console.log("ERROR...", response1.error);
+  const response = await supabase.from("max_per_day").select("*");
+  if (response.data) max_per_day = response.data[0]["max_per_day"];
+  if (response.error) console.log("ERROR...", response.error);
 
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
 
-  if (deck === "chat_gpt") session = [];
+  if (deck === "chat_gpt") session = await chat_gpt_handler(max_per_day);
   else session = await default_handler(deck, max_per_day);
 
   ctx.session.chatDescription = [0, deck, session, 0, 0, 0];
