@@ -38,7 +38,7 @@ export const decks: { [key: string]: [string, string, string][] } = {
       "description",
     ],
   ],
-  chat_gpt: [],
+  Chat_GPT: [],
 };
 
 export const allDecks = [
@@ -49,7 +49,7 @@ export const allDecks = [
   "revolts",
   "newspapers",
   "fundamental_rights",
-  "chat_gpt",
+  "Chat_GPT",
 ];
 export const allDecksString = allDecks.map((deck) => toTitleCase(deck));
 
