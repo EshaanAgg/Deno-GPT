@@ -32,7 +32,7 @@ bot.use(
       let obj = { chatDescription: [0, "", [], 0, 0, 0] as chatDescription };
       return obj;
     },
-  }),
+  })
 );
 
 bot.on("callback_query:data", async (ctx: customContext) => {
@@ -45,8 +45,7 @@ bot.on("callback_query:data", async (ctx: customContext) => {
     await new_deck(ctx.msg?.chat?.id || 0, ctx, data);
   } else {
     await ctx.answerCallbackQuery({
-      text:
-        "I'm sorry I didn't get that. Please choose a command from the dropdown.",
+      text: "I'm sorry I didn't get that. Please choose a command from the dropdown.",
     });
   }
   try {
@@ -66,11 +65,11 @@ bot.command(cmd, async (ctx: customContext) => {
 
 bot.command(
   "help",
-  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx),
+  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx)
 );
 bot.command(
   "start",
-  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx),
+  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx)
 );
 
 bot.on("poll_answer", async (ctx: customContext) => {
@@ -95,6 +94,10 @@ const handleUpdate = webhookCallback(bot, "std/http");
 serve(async (req) => {
   if (req.method === "POST") {
     const url = new URL(req.url);
+    console.log(url);
+    console.log(url.pathname);
+    console.log(url.pathname.slice(1));
+    console.log(bot.token);
     if (url.pathname.slice(1) === bot.token) {
       try {
         return await handleUpdate(req);
