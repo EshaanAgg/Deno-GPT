@@ -94,10 +94,6 @@ const handleUpdate = webhookCallback(bot, "std/http");
 serve(async (req) => {
   if (req.method === "POST") {
     const url = new URL(req.url);
-    console.log(url);
-    console.log(url.pathname);
-    console.log(url.pathname.slice(1));
-    console.log(bot.token);
     if (url.pathname.slice(1) === bot.token) {
       try {
         return await handleUpdate(req);
@@ -110,7 +106,7 @@ serve(async (req) => {
 });
 
 bot.catch((err) => {
-  console.log("ERRRORRRRR IN THE GLOBAL HANDLER");
+  console.log("ERROR IN THE GLOBAL HANDLER");
   console.log(err);
   console.log("END OF ERROR");
 });
