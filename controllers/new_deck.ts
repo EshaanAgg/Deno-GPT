@@ -12,10 +12,8 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   // Randomly select a deck if none is provided
   if (deck === "") deck = randomChoice(allDecks);
 
-  let max_per_day = MAX_PER_DAY;
-  const response = await supabase.from("max_per_day").select("*");
-  if (response.data) max_per_day = response.data[0]["max_per_day"];
-  if (response.error) console.log("ERROR...", response.error);
+  // TODO: Deprecated the serive for custom MAX_PER_DAY for each user. Need to restore it
+  const max_per_day = MAX_PER_DAY;
 
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
