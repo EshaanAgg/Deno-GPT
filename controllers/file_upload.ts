@@ -26,7 +26,7 @@ export const file_upload_handler = async (ctx: customContext) => {
   const userId = ctx.msg!.chat.id;
   if (!ADMIN_USER_IDS!.includes(userId.toString()))
     ctx.reply(
-      "Hi! You aren't currently authorised to upload files to the bot. Contact the admins if you think this is a mistake."
+      "Hi! You aren't currently authorised to upload files to the bot. Contact the admins if you think this is a mistake!"
     );
 
   await ctx.api.sendMessage(
