@@ -19,9 +19,9 @@ export const file_upload_handler = async (ctx: customContext) => {
 
   if (path!.slice(-4) != ".pdf")
     ctx.reply(
-      "Currenlty we only support .pdf files for making questions! Please try again with the correct file type."
+      "Currently we only support .pdf files for making questions! Please try again with the correct file type."
     );
-
+  console.log(file);
   const pdfData = await Deno.readFile(path!);
   const pdfDoc = await PDFDocument.load(pdfData);
   const pages = await pdfDoc.getPages();
