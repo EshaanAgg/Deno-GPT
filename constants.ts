@@ -57,6 +57,7 @@ export const N_OPTIONS = 4;
 export const cmd = "s";
 export const MAX_PER_DAY = 5;
 export const BOT_NAME = "Saras-ChatGPT";
+export const MAXIMUM_QUESTIONS_IN_ONE_GO = 50;
 
 export const STICKERS = [
   "CAACAgIAAxkBAAEGCA9jQgc0jfr9f7nwycCvjoE4WlNzngACcgUAAj-VzAoR4VZdHmW_cCoE",

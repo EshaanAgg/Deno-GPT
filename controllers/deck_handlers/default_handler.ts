@@ -1,6 +1,10 @@
 import { randomSample, randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
-import { decks, N_OPTIONS } from "../../constants.ts";
+import {
+  decks,
+  N_OPTIONS,
+  MAXIMUM_QUESTIONS_IN_ONE_GO,
+} from "../../constants.ts";
 
 const generate_all_questions = async (deck: string) => {
   const question_templates = decks[deck];
@@ -23,13 +27,13 @@ const generate_all_questions = async (deck: string) => {
       options.push([ans, ans_id]);
       randomShuffle(options);
       console.log(options);
-      questions.push(
-        [question_string.replace("[MASK]", ques[fill_column])],
+      questions.push([
+        question_string.replace("[MASK]", ques[fill_column]),
         options.map((opt) => opt[0]),
         ans,
         options.map((opt) => opt[1]),
-        ans_id
-      );
+        ans_id,
+      ]);
     });
   });
   console.log(questions);
@@ -45,6 +49,8 @@ export const default_handler = async (
   const session_data = await generate_all_questions(deck);
 
   return show_all_questions
-    ? session_data
+    ? session_data.slice(
+        Math.min(MAXIMUM_QUESTIONS_IN_ONE_GO, session_data.length)
+      )
     : session_data.slice(Math.min(max_per_day, session_data.length));
 };

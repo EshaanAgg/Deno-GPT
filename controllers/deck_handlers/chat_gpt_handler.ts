@@ -1,6 +1,6 @@
 import { randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
-
+import { MAXIMUM_QUESTIONS_IN_ONE_GO } from "../../constants.ts";
 interface QuestionInterface {
   id: string;
   question: string;
@@ -42,7 +42,8 @@ export const chat_gpt_handler = async (
   while (
     // Determine till when we should be adding the questions on the basis of the show_all_questions flag
     (!show_all_questions && questions.length < number_of_questions) ||
-    (show_all_questions && index < shuffled_questions.length)
+    (show_all_questions &&
+      index < Math.min(shuffled_questions.length, MAXIMUM_QUESTIONS_IN_ONE_GO))
   ) {
     if (is_valid_question(shuffled_questions[index]))
       questions.push(get_session_entry(shuffled_questions[index]));
