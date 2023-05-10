@@ -8,7 +8,7 @@ import {
 import { ltrim } from "./helper.ts";
 import supabase from "./supabaseClient.ts";
 import { pollCreator } from "./controllers/poll_creator.ts";
-import { BOT_NAME, cmd, decks, ADMIN_USER_IDS } from "./constants.ts";
+import { BOT_NAME, cmd, decks } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
 import {
@@ -16,6 +16,7 @@ import {
   toggle_show_all_questions,
 } from "./controllers/utilities.ts";
 import { chatDescription, customContext } from "./types.ts";
+import { file_upload_handler } from "./controllers/file_upload";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
 
@@ -97,16 +98,7 @@ bot.on("poll_answer", async (ctx: customContext) => {
 });
 
 bot.on(":file", async (ctx: customContext) => {
-  const file = await ctx.getFile();
-  const path = file.file_path;
-
-  const userId = ctx.msg!.chat.id;
-  if (!ADMIN_USER_IDS!.includes(userId.toString()))
-    ctx.reply(
-      "Hi! You aren't currently authorised to upload files to the bot. Contact the admins if you think this is a mistake."
-    );
-
-  await ctx.reply("Download your own file again: " + path);
+  await file_upload_handler(ctx);
 });
 
 bot.command("random", async (ctx: customContext) => {
