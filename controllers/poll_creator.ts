@@ -14,7 +14,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       id,
       toTitleCase(deck.replace("_", " ")) +
         ": " +
-        get_progress(i.toString(), session.length)
+        get_progress(i, session.length)
     );
     if (i > 1) {
       try {

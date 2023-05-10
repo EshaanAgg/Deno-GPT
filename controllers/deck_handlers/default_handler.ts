@@ -26,6 +26,7 @@ const generate_all_questions = async (deck: string) => {
         .filter((opt) => opt[0].length < 100);
       options.push([ans, ans_id]);
       randomShuffle(options);
+
       questions.push([
         question_string.replace("[MASK]", ques[fill_column]),
         options.map((opt) => opt[0]),
@@ -35,6 +36,7 @@ const generate_all_questions = async (deck: string) => {
       ]);
     });
   });
+
   return randomShuffle(questions);
 };
 
@@ -45,7 +47,7 @@ export const default_handler = async (
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const session_data = await generate_all_questions(deck);
-
+  console.log("All", show_all_questions, session_data.length);
   return show_all_questions
     ? session_data.slice(
         Math.min(MAXIMUM_QUESTIONS_IN_ONE_GO, session_data.length)

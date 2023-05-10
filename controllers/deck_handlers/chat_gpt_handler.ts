@@ -38,12 +38,12 @@ export const chat_gpt_handler = async (
   const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
   const questions = [];
 
+  if (show_all_questions) number_of_questions = MAXIMUM_QUESTIONS_IN_ONE_GO;
+
   let index = 0;
   while (
-    // Determine till when we should be adding the questions on the basis of the show_all_questions flag
-    (!show_all_questions && questions.length < number_of_questions) ||
-    (show_all_questions &&
-      index < Math.min(shuffled_questions.length, MAXIMUM_QUESTIONS_IN_ONE_GO))
+    questions.length < number_of_questions &&
+    index < shuffled_questions.length
   ) {
     if (is_valid_question(shuffled_questions[index]))
       questions.push(get_session_entry(shuffled_questions[index]));
