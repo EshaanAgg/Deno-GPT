@@ -1,6 +1,6 @@
 import { customContext } from "../types.ts";
 import { ADMIN_USER_IDS } from "../constants.ts";
-import pdfjsLib from "npm:pdfjs-dist@^3.6.172";
+import { PDFDocument } from "https://deno.land/x/pdf_lib/mod.ts";
 
 export const file_upload_handler = async (ctx: customContext) => {
   const file = await ctx.getFile();
@@ -22,11 +22,9 @@ export const file_upload_handler = async (ctx: customContext) => {
       "Currenlty we only support .pdf files for making questions! Please try again with the correct file type."
     );
 
-  const doc = await pdfjsLib.getDocument(path).promise;
-  const page1 = await doc.getPage(1);
-  const content = await page1.getTextContent();
-  const strings = content.items.map(function (item) {
-    return item.str;
-  });
-  ctx.reply(strings);
+  const pdfData = await Deno.readFile(path!);
+  const pdfDoc = await PDFDocument.load(pdfData);
+  const textContent = await pdfDoc.getText();
+
+  ctx.reply(textContent);
 };
