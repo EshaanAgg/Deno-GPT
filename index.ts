@@ -16,7 +16,7 @@ import {
   toggle_show_all_questions,
 } from "./controllers/utilities.ts";
 import { chatDescription, customContext } from "./types.ts";
-import { file_upload_handler } from "./controllers/file_upload";
+import { file_upload_handler } from "./controllers/file_upload.ts";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
 
