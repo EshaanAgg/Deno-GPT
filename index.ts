@@ -5,6 +5,10 @@ import {
   session,
   webhookCallback,
 } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
+import {
+  FileFlavor,
+  hydrateFiles,
+} from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
 import { ltrim } from "./helper.ts";
 import supabase from "./supabaseClient.ts";
 import { pollCreator } from "./controllers/poll_creator.ts";
@@ -41,6 +45,8 @@ bot.use(
     },
   })
 );
+
+bot.api.config.use(hydrateFiles(bot.token));
 
 bot.on("callback_query:data", async (ctx: customContext) => {
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
