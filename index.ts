@@ -11,7 +11,10 @@ import { pollCreator } from "./controllers/poll_creator.ts";
 import { BOT_NAME, cmd, decks } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
-import { send_help } from "./controllers/utilities.ts";
+import {
+  send_help,
+  toggle_show_all_questions,
+} from "./controllers/utilities.ts";
 import { chatDescription, customContext } from "./types.ts";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
@@ -29,7 +32,10 @@ bot.use(
     getSessionKey,
     initial: () => {
       // deno-lint-ignore prefer-const
-      let obj = { chatDescription: [0, "", [], 0, 0, 0] as chatDescription };
+      let obj = {
+        chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
+        showAllQuestions: false,
+      };
       return obj;
     },
   })
@@ -63,10 +69,15 @@ bot.command(cmd, async (ctx: customContext) => {
   await pick_deck(ctx.msg?.chat?.id || 0, ctx);
 });
 
+bot.command("toggle", async (ctx: customContext) => {
+  await toggle_show_all_questions(ctx.msg?.chat?.id || 0, ctx);
+});
+
 bot.command(
   "help",
   async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx)
 );
+
 bot.command(
   "start",
   async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx)

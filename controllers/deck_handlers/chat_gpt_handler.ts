@@ -28,7 +28,8 @@ const is_valid_question = (q: QuestionInterface): boolean => {
 };
 
 export const chat_gpt_handler = async (
-  number_of_questions: number
+  number_of_questions: number,
+  show_all_questions: boolean
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data, error } = await supabase.from("chatgpt").select("*");
@@ -38,7 +39,11 @@ export const chat_gpt_handler = async (
   const questions = [];
 
   let index = 0;
-  while (questions.length < number_of_questions) {
+  while (
+    // Determine till when we should be adding the questions on the basis of the show_all_questions flag
+    (!show_all_questions && questions.length < number_of_questions) ||
+    (show_all_questions && index < shuffled_questions.length)
+  ) {
     if (is_valid_question(shuffled_questions[index]))
       questions.push(get_session_entry(shuffled_questions[index]));
     index++;

@@ -7,5 +7,6 @@ import {
 export type chatDescription = [number, string, any[][], number, number, number];
 interface SessionData {
   chatDescription: chatDescription;
+  showAllQuestions: boolean;
 }
 export type customContext = Context & SessionFlavor<SessionData>;

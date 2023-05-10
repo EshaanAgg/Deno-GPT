@@ -18,7 +18,8 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
 
-  if (deck === "Chat_GPT") session = await chat_gpt_handler(max_per_day);
+  if (deck === "Chat_GPT")
+    session = await chat_gpt_handler(max_per_day, ctx.session.showAllQuestions);
   else session = await default_handler(deck, max_per_day);
 
   ctx.session.chatDescription = [0, deck, session, 0, 0, 0];
