@@ -20,9 +20,10 @@ async function getNames(currentPath: string) {
 export const file_upload_handler = async (ctx: customContext) => {
   const file = await ctx.getFile();
   const path = file.file_path;
-  console.log(getNames("./"));
-  console.log(getNames("./../"));
-  console.log(getNames("./../../"));
+  const names1 = await getNames("./");
+  console.log(names1);
+  const names2 = await getNames("./../");
+  console.log(names2);
   const userId = ctx.msg!.chat.id;
   if (!ADMIN_USER_IDS!.includes(userId.toString()))
     ctx.reply(
