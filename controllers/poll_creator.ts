@@ -1,6 +1,6 @@
 import { get_progress } from "./utilities.ts";
 import { randomChoice, toTitleCase } from "../helper.ts";
-import { BOT_NAME, MAX_PER_DAY, STICKERS, texts } from "../constants.ts";
+import { BOT_NAME, STICKERS, texts } from "../constants.ts";
 import supabase from "../supabaseClient.ts";
 import { customContext } from "../types.ts";
 
@@ -14,7 +14,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       id,
       toTitleCase(deck.replace("_", " ")) +
         " : " +
-        (await get_progress(i.toString(), MAX_PER_DAY))
+        (await get_progress(i.toString(), session.length))
     );
     if (i > 1) {
       try {
