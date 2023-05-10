@@ -129,3 +129,5 @@ export const texts = {
         Decks on Saras: ${allDecksString}. \n\n
         We will soon add more decks and features. Please share your feedback with us at +1 213 374 6583.`,
 };
+
+export const ADMIN_USER_IDS = Deno.env.get("ADMIN_USER_IDS");
