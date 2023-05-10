@@ -1,57 +1,50 @@
-import { randomSample, randomShuffle, randomChoice } from "../../helper.ts";
+import { randomSample, randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
 import { decks, N_OPTIONS } from "../../constants.ts";
 
+const generate_all_questions = async (deck: string) => {
+  const question_templates = decks[deck];
+  const { data: question_data } = await supabase.from(deck).select("*");
+
+  const questions: string[][] = [];
+
+  question_templates.forEach((template) => {
+    question_data!.forEach((ques) => {
+      const [question_string, fill_column, ans_column] = template;
+
+      const ans = ques[ans_column];
+      const ans_id = ques["id"];
+
+      // Array of ["Option Content", "Option ID"]
+      const options = randomSample(question_data!, N_OPTIONS)
+        .filter((ques) => ques["id"] != ans_id)
+        .map((ques) => [ques[ans_column], ques["id"]])
+        .filter((opt) => opt[0].length < 100);
+      options.push([ans, ans_id]);
+      randomShuffle(options);
+
+      questions.push(
+        [question_string.replace("[MASK]", ques[fill_column])],
+        options.map((opt) => opt[0]),
+        ans,
+        options.map((opt) => opt[1]),
+        ans_id
+      );
+    });
+  });
+
+  return randomShuffle(questions);
+};
+
 export const default_handler = async (
   deck: string,
-  max_per_day: number
+  max_per_day: number,
+  show_all_questions: boolean
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
-  let { data } = await supabase.from(deck).select("*");
-  if (!data) data = [];
+  const session_data = await generate_all_questions(deck);
 
-  // deno-lint-ignore prefer-const
-  let session = [];
-  let attempts = 0;
-
-  while (session.length < max_per_day) {
-    attempts += 1;
-    const [template, fill_col, ans_col] = randomChoice(decks[deck]);
-    let qs = randomSample(data, N_OPTIONS);
-
-    const ans = String(qs[0][ans_col]);
-    const fill = qs[0][fill_col];
-    const ans_id = qs[0]["id"];
-    qs = randomShuffle(qs);
-
-    // deno-lint-ignore prefer-const
-    let options: string[] = [];
-    // deno-lint-ignore prefer-const
-    let option_ids: string[] = [];
-    let max_option_length = -1;
-
-    qs.forEach((q) => {
-      options.push(String(q[ans_col]));
-      option_ids.push(q["id"]);
-      max_option_length = Math.max(max_option_length, String(q[ans]).length);
-    });
-
-    // deno-lint-ignore prefer-const
-    let ans_array: string[] = [];
-    session.forEach((s) => ans_array.push(s[2]));
-
-    if (!ans_array.includes(ans) && max_option_length < 95) {
-      session.push([
-        template.replace("[MASK]", fill),
-        options,
-        ans,
-        option_ids,
-        ans_id,
-      ]);
-    } else {
-      console.log(`Skipped this attempt with options = ${options}`);
-    }
-  }
-
-  return session;
+  return show_all_questions
+    ? session_data
+    : session_data.slice(Math.min(max_per_day, session_data.length));
 };
