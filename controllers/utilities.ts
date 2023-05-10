@@ -12,7 +12,7 @@ export const get_progress = (n: number, total: number) => {
   const percent = Math.round((100 * n) / total);
 
   const number_of_boxes_to_fill = Math.round(percent / 10);
-  const box_index = Math.floor(percent / 20);
+  const box_index = Math.floor((percent - 0.01) / 20);
 
   for (let i = 0; i < number_of_boxes_to_fill; i++)
     progress[i] = solids[box_index];

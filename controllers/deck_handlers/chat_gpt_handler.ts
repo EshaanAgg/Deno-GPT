@@ -22,7 +22,7 @@ const is_valid_question = (q: QuestionInterface): boolean => {
     q.question.length < 100 &&
     q.A.length < 100 &&
     q.B.length < 100 &&
-    q.C.length < 10 &&
+    q.C.length < 100 &&
     q.D.length < 100
   );
 };
