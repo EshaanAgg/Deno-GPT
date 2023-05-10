@@ -26,7 +26,6 @@ const generate_all_questions = async (deck: string) => {
         .filter((opt) => opt[0].length < 100);
       options.push([ans, ans_id]);
       randomShuffle(options);
-      console.log(options);
       questions.push([
         question_string.replace("[MASK]", ques[fill_column]),
         options.map((opt) => opt[0]),
@@ -36,7 +35,6 @@ const generate_all_questions = async (deck: string) => {
       ]);
     });
   });
-  console.log(questions);
   return randomShuffle(questions);
 };
 

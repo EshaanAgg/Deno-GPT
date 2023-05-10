@@ -5,17 +5,23 @@ import { customContext } from "../types.ts";
 export const get_progress = (i = "1", total = 5) => {
   const solids = ["🟥", "🟧", "🟨", "🟩", "🟦"];
   const blank = "⬜️";
-  const unit = Math.round(total / solids.length);
 
-  let n = parseInt(i);
+  const progress = [];
+  for (let i = 0; i < 10; i++) progress.push(blank);
+
+  const n = parseInt(i);
   const percent = Math.round((100 * n) / total);
 
-  if (n - 1 < 0) n += solids.length;
-  const solid = solids[n - 1];
+  const number_of_boxes_to_fill = Math.round(percent / 10);
+  const box_index =
+    number_of_boxes_to_fill % 2
+      ? Math.max(0, (number_of_boxes_to_fill - 3) / 2)
+      : Math.max((number_of_boxes_to_fill - 2) / 2, 0);
 
-  return (
-    solid.repeat(n * unit) + blank.repeat((total - n) * unit) + `  ${percent}%`
-  );
+  for (let i = 0; i < number_of_boxes_to_fill; i++)
+    progress[i] = solids[box_index];
+
+  return `\n${progress.join()}\n${percent}% done!`;
 };
 
 export const send_help = async (id: number, ctx: customContext) => {
