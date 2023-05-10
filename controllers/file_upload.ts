@@ -1,6 +1,6 @@
 import { customContext } from "../types.ts";
 import { ADMIN_USER_IDS } from "../constants.ts";
-import { PDFDocument } from "https://deno.land/x/pdf_lib/mod.ts";
+import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.11.1?dts";
 
 export const file_upload_handler = async (ctx: customContext) => {
   const file = await ctx.getFile();
@@ -24,7 +24,15 @@ export const file_upload_handler = async (ctx: customContext) => {
 
   const pdfData = await Deno.readFile(path!);
   const pdfDoc = await PDFDocument.load(pdfData);
-  const textContent = await pdfDoc.getText();
+  const pages = await pdfDoc.getPages();
+  let textContent = "";
+
+  for (let i = 0; i < pages.length; i++) {
+    const page = pages[i];
+    const content = await page.getTextContent();
+    const strings = content.items.map((item) => item.str);
+    textContent += strings.join(" ");
+  }
 
   ctx.reply(textContent);
 };
