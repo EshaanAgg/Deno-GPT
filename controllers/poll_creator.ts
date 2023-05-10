@@ -13,8 +13,8 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     pbar_msg = await ctx.api.sendMessage(
       id,
       toTitleCase(deck.replace("_", " ")) +
-        " : " +
-        (await get_progress(i.toString(), session.length))
+        ": " +
+        get_progress(i.toString(), session.length)
     );
     if (i > 1) {
       try {
@@ -59,12 +59,18 @@ export const pollCreator = async (id: number, ctx: customContext) => {
   const ans_index = options.indexOf(ans);
 
   try {
-    return_msg = await ctx.api.sendPoll(id, question, options, {
-      is_anonymous: false,
-      type: "quiz",
-      correct_option_id: ans_index,
-      explanation: "Insert explanation here.",
-    });
+    return_msg = await ctx.api.sendPoll(
+      id,
+      question,
+      // Implicitly convert the options to string type
+      options.map((opt: string | number) => opt.toString()),
+      {
+        is_anonymous: false,
+        type: "quiz",
+        correct_option_id: ans_index,
+        explanation: "Insert explanation here.",
+      }
+    );
   } catch (e) {
     console.log(e);
   }

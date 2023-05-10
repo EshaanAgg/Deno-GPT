@@ -21,7 +21,7 @@ export const get_progress = (i = "1", total = 5) => {
   for (let i = 0; i < number_of_boxes_to_fill; i++)
     progress[i] = solids[box_index];
 
-  return `\n${progress.join()}\n${percent}% done!`;
+  return `\n${progress.join("")}\n${percent}% done!`;
 };
 
 export const send_help = async (id: number, ctx: customContext) => {
