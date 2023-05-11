@@ -105,7 +105,9 @@ bot.command("random", async (ctx: customContext) => {
   await new_deck(ctx.msg?.chat.id || 0, ctx);
 });
 
-const handleUpdate = webhookCallback(bot, "std/http");
+const handleUpdate = webhookCallback(bot, "std/http", {
+  timeoutMilliseconds: 20 * 1000,
+});
 
 serve(async (req) => {
   if (req.method === "POST") {
