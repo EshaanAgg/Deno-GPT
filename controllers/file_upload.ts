@@ -41,7 +41,7 @@ export const file_upload_handler = async (ctx: customContext) => {
   console.log(pdf_to_text_response);
   const pdf_to_text_json = await pdf_to_text_response.json();
   console.log(pdf_to_text_json);
-  const text_url = pdf_to_text_json.Files.Url;
+  const text_url = pdf_to_text_json["Files"][0]["Url"];
   console.log(text_url);
 
   const content_response = await fetch(text_url);
