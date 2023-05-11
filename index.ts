@@ -106,7 +106,7 @@ bot.command("random", async (ctx: customContext) => {
 });
 
 const handleUpdate = webhookCallback(bot, "std/http", {
-  timeoutMilliseconds: 20 * 1000,
+  timeoutMilliseconds: 60 * 1000,
 });
 
 serve(async (req) => {
