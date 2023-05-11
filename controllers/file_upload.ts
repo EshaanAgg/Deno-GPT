@@ -1,5 +1,6 @@
 import { customContext } from "../types.ts";
 import { ADMIN_USER_IDS } from "../constants.ts";
+import supabase from "../supabaseClient.ts";
 
 const API_BASE_URL = "https://v2.convertapi.com/convert/pdf/to/txt";
 
@@ -44,5 +45,102 @@ export const file_upload_handler = async (ctx: customContext) => {
   await ctx.api.sendMessage(
     userId,
     "The content from the uploaded file has been successfully parsed. Generating questions now! "
+  );
+
+  const chat_gpt_request = new Request(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+        "OpenAI-Organization": "org-CG6c1ogVQGDmNhYh4x1MMZ8o",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "user",
+            content: `Reply only and only in JSON object, not text. Create ten multiple choice questions (and show correct answer) from the following content for UPSC Prelims preparation:
+
+                Answer only in json with keys "question", "options" which is a list of four strings, and "answer" which is an index 0-3: 
+                { 
+                    "questions": [
+                        {
+                            "question": "Which is the first state to launch a mobile app for COVID-19 vaccination?",
+                            "options": [
+                                "A. Kerala",
+                                "B. Maharashtra",
+                                "C. Tamil Nadu",
+                                "D. Karnataka"
+                            ],
+                            "answer": 0
+                        },
+                        {
+                            ...
+                        }
+                    ]
+                }
+
+                ${content}`,
+          },
+        ],
+      }),
+    }
+  );
+
+  let make_request = true;
+  let attempts = 0;
+  let gpt_json;
+
+  while (make_request && attempts < 5) {
+    attempts += 1;
+
+    const gpt_response = await fetch(chat_gpt_request);
+    gpt_json = await gpt_response.json();
+    console.log(gpt_json);
+
+    if (gpt_json.error?.type == "server_error") {
+      ctx.api.sendMessage(
+        userId,
+        "The content creation request failed due to an error from ChatGPT."
+      );
+      ctx.api.sendMessage(
+        userId,
+        `Here is the recieved error message: ${gpt_json.error.message}`
+      );
+      ctx.api.sendMessage(userId, "Retrying....");
+      continue;
+    }
+
+    make_request = false;
+  }
+
+  if (make_request)
+    ctx.reply(
+      "We made 5 tries but recieved an error each time. Please try again later by uplaoding the file again!"
+    );
+
+  ctx.api.sendMessage(
+    userId,
+    "The question generation was successfull! Adding the questions to database now!"
+  );
+
+  const question_content = gpt_json.choices[0].message.content;
+  const question_json = eval(question_content);
+
+  const questions = question_json.questions.map((ques) => ({
+    question: ques.question,
+    A: ques.options[0].slice(3),
+    B: ques.options[1].slice(3),
+    C: ques.options[2].slice(3),
+    D: ques.options[3].slice(3),
+    ans: ques.answer,
+  }));
+
+  await supabase.from("chatgpt_generated").insert(questions).select();
+
+  ctx.reply(
+    "All the questions have been temporarily stored in a table called 'chatgpt_generated' until they can be verified and added to additional decks!"
   );
 };
