@@ -11,20 +11,24 @@ export const file_upload_handler = async (ctx: customContext) => {
   )}/${file.file_path}`;
 
   const userId = ctx.msg!.chat.id;
-  if (!ADMIN_USER_IDS!.includes(userId.toString()))
+  if (!ADMIN_USER_IDS!.includes(userId.toString())) {
     ctx.reply(
       "Hi! You aren't currently authorised to upload files to the bot. Contact the admins if you think this is a mistake!"
     );
+    return;
+  }
 
   await ctx.api.sendMessage(
     userId,
     "Thanks for the upload! We will try to parse it to generate all the questions! "
   );
 
-  if (file.file_path!.slice(-4) != ".pdf")
+  if (file.file_path!.slice(-4) != ".pdf") {
     ctx.reply(
       "Currently we only support .pdf files for making questions! Please try again with the correct file type."
     );
+    return;
+  }
 
   const pdf_to_text_request = new Request(
     `${API_BASE_URL}?Secret=${Deno.env.get(
@@ -42,6 +46,7 @@ export const file_upload_handler = async (ctx: customContext) => {
     ctx.reply(
       `The content parsing from the uploaded file failed with the following error message: ${pdf_to_text_json.error.message}`
     );
+    return;
   }
 
   const text_url = pdf_to_text_json["Files"][0]["Url"];
@@ -122,10 +127,12 @@ export const file_upload_handler = async (ctx: customContext) => {
     make_request = false;
   }
 
-  if (make_request)
+  if (make_request) {
     ctx.reply(
       "We made 5 tries but recieved an error each time. Please try again later by uplaoding the file again!"
     );
+    return;
+  }
 
   ctx.api.sendMessage(
     userId,
@@ -141,6 +148,7 @@ export const file_upload_handler = async (ctx: customContext) => {
     ctx.reply(
       `The parsing of JSON from the ChatGPT response failed with the following message: ${err.message}`
     );
+    return;
   }
 
   const questions = question_json.questions.map((ques) => ({
