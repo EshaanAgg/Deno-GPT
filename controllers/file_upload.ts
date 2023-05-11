@@ -9,6 +9,7 @@ export const file_upload_handler = async (ctx: customContext) => {
   const download_file_url = `https://api.telegram.org/file/bot${Deno.env.get(
     "TELEGRAM_BOT_TOKEN"
   )}/${file.file_path}`;
+  console.log(download_file_url);
 
   const userId = ctx.msg!.chat.id;
   if (!ADMIN_USER_IDS!.includes(userId.toString()))
