@@ -133,7 +133,9 @@ export const file_upload_handler = async (ctx: customContext) => {
   );
 
   const question_content = gpt_json.choices[0].message.content;
-  const question_json = eval(question_content);
+  console.log(question_content);
+
+  const question_json = JSON.parse(question_content);
   console.log(question_json);
 
   const questions = question_json.questions.map((ques) => ({
