@@ -9,6 +9,7 @@ export const file_upload_handler = async (ctx: customContext) => {
   const download_file_url = `https://api.telegram.org/file/bot${Deno.env.get(
     "TELEGRAM_BOT_TOKEN"
   )}/${file.file_path}`;
+
   console.log(download_file_url);
 
   const userId = ctx.msg!.chat.id;
@@ -37,11 +38,15 @@ export const file_upload_handler = async (ctx: customContext) => {
   );
 
   const pdf_to_text_response = await fetch(pdf_to_text_request);
+  console.log(pdf_to_text_response);
   const pdf_to_text_json = await pdf_to_text_response.json();
+  console.log(pdf_to_text_json);
   const text_url = pdf_to_text_json.Files.Url;
+  console.log(text_url);
 
   const content_response = await fetch(text_url);
   const content = await content_response.text();
+  console.log(content);
 
   await ctx.api.sendMessage(
     userId,
@@ -129,6 +134,7 @@ export const file_upload_handler = async (ctx: customContext) => {
 
   const question_content = gpt_json.choices[0].message.content;
   const question_json = eval(question_content);
+  console.log(question_json);
 
   const questions = question_json.questions.map((ques) => ({
     question: ques.question,
@@ -138,6 +144,7 @@ export const file_upload_handler = async (ctx: customContext) => {
     D: ques.options[3].slice(3),
     ans: ques.answer,
   }));
+  console.log(questions);
 
   await supabase.from("chatgpt_generated").insert(questions).select();
 
