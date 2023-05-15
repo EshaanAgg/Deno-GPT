@@ -83,12 +83,15 @@ const incorrectHandler = async (
   userId: number
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
-  const { data: incorrectQuestions } = await supabase
+  const { data: incorrectQuestionObjects } = await supabase
     .from("user_progress")
     .select("question")
     .eq("user", userId)
     .eq("correct", false);
 
+  const incorrectQuestions = incorrectQuestionObjects!.map(
+    (ques) => ques.question
+  );
   console.log(incorrectQuestions);
 
   const { data } = await supabase
