@@ -1,4 +1,5 @@
-// import { randomShuffle } from "../../helper.ts";
+import { Context } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
+import { randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
 
 interface QuestionInterface {
@@ -46,9 +47,9 @@ const transform_question_options = (
   return q;
 };
 
-export const default_handler = async (
+const regularHandler = async (
   deck: string,
-  number_of_questions: number
+  question_preference: number
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data, error } = await supabase
@@ -57,15 +58,14 @@ export const default_handler = async (
     .eq("deck", deck)
     .eq("confirmed", true);
   if (error) console.log(error);
+  if (question_preference == 0) question_preference = 100;
 
-  // const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
-  // Remving the shuffling of question to check the status of history tracking
-  const shuffled_questions: QuestionInterface[] = data;
+  const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
   const questions = [];
 
   let index = 0;
   while (
-    questions.length < number_of_questions &&
+    questions.length < question_preference &&
     index < shuffled_questions.length
   ) {
     if (is_valid_question(shuffled_questions[index]))
@@ -76,4 +76,54 @@ export const default_handler = async (
   }
 
   return questions;
+};
+
+const incorrectHandler = async (
+  deck: string,
+  userId: number
+  // deno-lint-ignore no-explicit-any
+): Promise<any[][]> => {
+  const { data: incorrectQuestions } = await supabase
+    .from("user_progress")
+    .select("question")
+    .eq("user", userId)
+    .eq("correct", false);
+
+  console.log(incorrectQuestions);
+
+  const { data } = await supabase
+    .from("chatgpt")
+    .select("*")
+    .eq("deck", deck)
+    .eq("confirmed", true)
+    .in("id", incorrectQuestions!);
+
+  const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
+  const questions = [];
+
+  let index = 0;
+  while (questions.length < 100 && index < shuffled_questions.length) {
+    if (is_valid_question(shuffled_questions[index]))
+      questions.push(
+        get_session_entry(transform_question_options(shuffled_questions[index]))
+      );
+    index++;
+  }
+
+  return questions;
+};
+
+export const default_handler = async (
+  deck: string,
+  question_preference: number,
+  userId: number
+  // deno-lint-ignore no-explicit-any
+): Promise<any[][]> => {
+  if (question_preference != -1) {
+    const ret = await regularHandler(deck, question_preference);
+    return ret;
+  }
+
+  const r = await incorrectHandler(deck, userId);
+  return r;
 };

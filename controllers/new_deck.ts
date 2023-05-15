@@ -1,27 +1,33 @@
 import { randomChoice } from "../helper.ts";
-import { allDecks, BOT_NAME, MAX_PER_DAY } from "../constants.ts";
+import { allDecks, BOT_NAME } from "../constants.ts";
 import supabase from "../supabaseClient.ts";
 import { pollCreator } from "./poll_creator.ts";
 import { customContext, chatDescription } from "../types.ts";
 import { default_handler } from "./deck_handlers/default_handler.ts";
 
 export const new_deck = async (id: number, ctx: customContext, deck = "") => {
-  ctx.session.chatDescription = [0, "", [], 0, 0, 0] as chatDescription;
+  ctx.session.chatDescription = [0, "", [], 0, 0, "0"] as chatDescription;
 
   // Randomly select a deck if none is provided
   if (deck === "") deck = randomChoice(allDecks);
-
-  // TODO: Deprecated the serive for custom MAX_PER_DAY for each user. Need to restore it
-  const max_per_day = MAX_PER_DAY;
 
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
 
   if (deck === "assorted")
-    session = await default_handler("default", max_per_day);
-  else session = await default_handler(deck, max_per_day);
+    session = await default_handler(
+      "default",
+      ctx.session.questionPreference,
+      id
+    );
+  else
+    session = await default_handler(deck, ctx.session.questionPreference, id);
 
-  ctx.session.chatDescription = [0, deck, session, 0, 0, 0];
+  ctx.session.chatDescription = [0, deck, session, 0, 0, "0"];
+
+  ctx.reply(
+    `${session.length} questions would be displayed now on the basis of your question preference. `
+  );
 
   // deno-lint-ignore no-unused-vars
   const poll_msg_ids = await pollCreator(id, ctx);
