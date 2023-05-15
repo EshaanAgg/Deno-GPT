@@ -71,7 +71,29 @@ export const pollCreator = async (id: number, ctx: customContext) => {
         explanation: "Insert explanation here.",
       }
     );
-    console.log("In poll creator\n", return_msg.poll);
+
+    // Store the information to map the polls to the questions
+    session.chatDescription.pollInfo.push({
+      pollId: return_msg.poll.id,
+      questionId: qid,
+      correctAnsIndex: ans_index,
+    });
+
+    // Check if the row corresponding to this question and user exists in the database
+    // and doing the necessary updates if not
+    const { data } = await supabase
+      .from("user_progress")
+      .select("*")
+      .eq("question", qid.toString())
+      .eq("user", id.toString());
+
+    if (!data) {
+      await supabase.from("user_progress").insert({
+        question: qid.toString(),
+        user: id.toString(),
+        correct: false,
+      });
+    }
   } catch (e) {
     console.log(e);
   }

@@ -3,6 +3,12 @@ import {
   SessionFlavor,
 } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
 
+export type PollInfoType = {
+  pollId: string;
+  questionId: string;
+  correctAnsIndex: number;
+};
+
 // deno-lint-ignore no-explicit-any
 export type chatDescription = [number, string, any[][], number, number, number];
 interface SessionData {
@@ -13,5 +19,6 @@ interface SessionData {
    * Set to -1 to indicate all the questions which were previously incorrect
    */
   questionPreference: number;
+  pollInfo: PollInfoType[];
 }
 export type customContext = Context & SessionFlavor<SessionData>;

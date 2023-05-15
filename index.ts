@@ -15,6 +15,7 @@ import { send_help, set_settings } from "./controllers/utilities.ts";
 import { set_question_preference } from "./controllers/set_question_preference.ts";
 import { chatDescription, customContext } from "./types.ts";
 import { file_upload_handler } from "./controllers/file_upload.ts";
+import { update_question_status } from "./helpers/poll_supabase";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
 
@@ -34,6 +35,7 @@ bot.use(
       let obj = {
         chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
         questionPreference: 5,
+        pollInfo: [],
       };
       return obj;
     },
@@ -86,8 +88,10 @@ bot.on("poll_answer", async (ctx: customContext) => {
   const poll_id = ctx.update?.poll_answer?.poll_id || -1;
   const opts_id = ctx.update?.poll_answer?.option_ids;
   const id = ctx.update?.poll_answer?.user?.id || 0;
-  console.log(ctx.update.poll_answer);
-  console.log(ctx.update);
+
+  const chosen_option = ctx.update.poll_answer.option_ids[0];
+  await update_question_status(ctx, poll_id, chosen_option, id);
+
   if (poll_id == ctx.session.chatDescription[5]) {
     await pollCreator(id, ctx);
   }

@@ -58,7 +58,9 @@ export const default_handler = async (
     .eq("confirmed", true);
   if (error) console.log(error);
 
-  const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
+  // const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
+  // Remving the shuffling of question to check the status of history tracking
+  const shuffled_questions: QuestionInterface[] = data;
   const questions = [];
 
   let index = 0;
