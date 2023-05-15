@@ -7,7 +7,7 @@ import { customContext } from "../types.ts";
 export const pollCreator = async (id: number, ctx: customContext) => {
   //   [i, deck, session, mid, pbar_mid, most_recent_poll_id]
   let [i, deck, session, __, pbar_mid, _] = ctx.session.chatDescription;
-  let pbar_msg, return_msg;
+  let pbar_msg;
 
   if (i >= 0) {
     pbar_msg = await ctx.api.sendMessage(
@@ -58,7 +58,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
   const [question, qid, options, ans, ___, ____] = session[i];
   const ans_index = options.indexOf(ans);
 
-  return_msg = await ctx.api.sendPoll(
+  const return_msg = await ctx.api.sendPoll(
     id,
     question,
     // Implicitly convert the options to string type
@@ -101,11 +101,8 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     session,
     return_msg?.message_id || 0,
     pbar_mid,
-    parseInt(return_msg!.poll.id),
+    return_msg!.poll.id,
   ];
-  console.log("in poll creator");
-  console.log(return_msg!.poll.id);
-  console.log(ctx.session.chatDescription[5]);
 
   try {
     await supabase.from("TempMsgs").insert({

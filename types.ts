@@ -10,7 +10,7 @@ export type PollInfoType = {
 };
 
 // deno-lint-ignore no-explicit-any
-export type chatDescription = [number, string, any[][], number, number, number];
+export type chatDescription = [number, string, any[][], number, number, string];
 interface SessionData {
   chatDescription: chatDescription;
   /*

@@ -95,7 +95,7 @@ bot.on("poll_answer", async (ctx: customContext) => {
 
   console.log("pollid", poll_id);
   console.log("cd", ctx.session.chatDescription[5]);
-  if (poll_id?.toString() == ctx.session.chatDescription[5].toString()) {
+  if (poll_id == ctx.session.chatDescription[5]) {
     await pollCreator(id, ctx);
   }
   await supabase
