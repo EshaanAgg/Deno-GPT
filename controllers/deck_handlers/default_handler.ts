@@ -29,6 +29,16 @@ const is_valid_question = (q: QuestionInterface): boolean => {
   );
 };
 
+const transform_question_options = (
+  q: QuestionInterface
+): QuestionInterface => {
+  if (q.A.slice(0, 3) == "A. ") q.A = q.A.slice(3);
+  if (q.B.slice(0, 3) == "A. ") q.B = q.B.slice(3);
+  if (q.C.slice(0, 3) == "A. ") q.C = q.C.slice(3);
+  if (q.D.slice(0, 3) == "A. ") q.D = q.D.slice(3);
+  return q;
+};
+
 export const default_handler = async (
   deck: string,
   number_of_questions: number,
@@ -53,7 +63,9 @@ export const default_handler = async (
     index < shuffled_questions.length
   ) {
     if (is_valid_question(shuffled_questions[index]))
-      questions.push(get_session_entry(shuffled_questions[index]));
+      questions.push(
+        get_session_entry(transform_question_options(shuffled_questions[index]))
+      );
     index++;
   }
 
