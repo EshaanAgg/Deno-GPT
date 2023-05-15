@@ -103,7 +103,7 @@ bot.command("random", async (ctx: customContext) => {
   await new_deck(ctx.msg?.chat.id || 0, ctx);
 });
 
-bot.command("message", async (ctx: customContext) => {
+bot.on("message", async (ctx: customContext) => {
   const message: string = ctx.message;
   if (message.indexOf("setQuestion:") != -1)
     await set_question_preference(message, ctx);

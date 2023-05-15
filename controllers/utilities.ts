@@ -50,10 +50,10 @@ export const set_settings = async (id: number, ctx: customContext) => {
     message = `You will only see ${ctx.session.questionPreference} randomly chosen questions for a deck.`;
 
   message += `\n\nYou can change this behaviour by sending the following text:\n
-    setQuestion:ALL (Will show all questions in a deck)\n
-    setQuestion:INC (Will show all questions which you had attempted incorrectly previously)\n
-    setQuestion:XY  (Will show XY questions for each deck. Note that XY must always be a two digit number like 05, 10, 99 etc)\n\n
-    Please note that all the commands are case sensitive.`;
+setQuestion:ALL (Will show all questions in a deck)\n
+setQuestion:INC (Will show all questions which you had attempted incorrectly previously)\n
+setQuestion:XY  (Will show XY questions for each deck. Note that XY must always be a two digit number like 05, 10, 99 etc)\n\n
+Please note that all the commands are case sensitive.`;
 
   const msg = await ctx.api.sendMessage(id, message);
   try {
