@@ -73,7 +73,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     );
 
     // Store the information to map the polls to the questions
-    session.chatDescription.pollInfo.push({
+    ctx.session.pollInfo.push({
       pollId: return_msg.poll.id,
       questionId: qid,
       correctAnsIndex: ans_index,

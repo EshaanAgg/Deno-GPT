@@ -7,7 +7,7 @@ export const update_question_status = async (
   chosen_option: number,
   userId: string
 ) => {
-  const pollInfo: PollInfoType[] = ctx.chatDescription.pollInfo;
+  const pollInfo: PollInfoType[] = ctx.session.pollInfo;
   for (let i = 0; i < pollInfo.length; i++)
     if (pollInfo[i].pollId.toString() === poll_id.toString()) {
       const { error } = await supabase

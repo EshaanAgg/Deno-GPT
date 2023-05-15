@@ -30,15 +30,10 @@ function getSessionKey(ctx: Context): string | undefined {
 bot.use(
   session({
     getSessionKey,
-    initial: () => {
-      // deno-lint-ignore prefer-const
-      let obj = {
-        chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
-        questionPreference: 5,
-        pollInfo: [],
-      };
-      return obj;
-    },
+    initial: () => ({
+      chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
+      questionPreference: 5,
+      pollInfo: []
   })
 );
 
