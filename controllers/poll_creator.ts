@@ -103,6 +103,9 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     pbar_mid,
     parseInt(return_msg!.poll.id),
   ];
+  console.log("in poll creator");
+  console.log(return_msg!.poll.id);
+  console.log(ctx.session.chatDescription[5]);
 
   try {
     await supabase.from("TempMsgs").insert({
