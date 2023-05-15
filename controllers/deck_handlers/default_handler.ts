@@ -1,4 +1,4 @@
-import { randomShuffle } from "../../helper.ts";
+// import { randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
 
 interface QuestionInterface {

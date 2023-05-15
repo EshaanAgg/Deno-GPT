@@ -15,7 +15,7 @@ import { send_help, set_settings } from "./controllers/utilities.ts";
 import { set_question_preference } from "./controllers/set_question_preference.ts";
 import { chatDescription, customContext } from "./types.ts";
 import { file_upload_handler } from "./controllers/file_upload.ts";
-import { update_question_status } from "./helpers/poll_supabase";
+import { update_question_status } from "./helpers/poll_supabase.ts";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
 
