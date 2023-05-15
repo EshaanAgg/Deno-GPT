@@ -86,6 +86,8 @@ bot.on("poll_answer", async (ctx: customContext) => {
   const poll_id = ctx.update?.poll_answer?.poll_id || -1;
   const opts_id = ctx.update?.poll_answer?.option_ids;
   const id = ctx.update?.poll_answer?.user?.id || 0;
+  console.log(ctx.update.poll_answer);
+  console.log(ctx.update);
   if (poll_id == ctx.session.chatDescription[5]) {
     await pollCreator(id, ctx);
   }
@@ -104,10 +106,10 @@ bot.command("random", async (ctx: customContext) => {
 });
 
 bot.on("message", async (ctx: customContext) => {
-  const message: string = ctx.message;
+  const message: string = ctx.message.text;
   if (message.indexOf("setQuestion:") != -1)
     await set_question_preference(message, ctx);
-  else ctx.reply("Unrecognised command!");
+  else ctx.reply("Unrecognized command!");
 });
 
 const handleUpdate = webhookCallback(bot, "std/http", {
