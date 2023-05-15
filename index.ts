@@ -45,7 +45,7 @@ bot.use(
 bot.on("callback_query:data", async (ctx: customContext) => {
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
   const message_id = ctx.callbackQuery?.message?.message_id || 0;
-  if (allDecks.indexOf(data) !== u - 1) {
+  if (allDecks.indexOf(data) !== -1) {
     await ctx.answerCallbackQuery({
       text: "Loading your session!",
     });
