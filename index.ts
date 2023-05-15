@@ -30,10 +30,14 @@ function getSessionKey(ctx: Context): string | undefined {
 bot.use(
   session({
     getSessionKey,
-    initial: () => ({
-      chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
-      questionPreference: 5,
-      pollInfo: []
+    initial: () => {
+      const obj = {
+        chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
+        questionPreference: 5,
+        pollInfo: [],
+      };
+      return obj;
+    },
   })
 );
 
