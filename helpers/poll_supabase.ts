@@ -8,6 +8,7 @@ export const update_question_status = async (
   userId: string
 ) => {
   const pollInfo: PollInfoType[] = ctx.session.pollInfo;
+  console.log("pole info", pollInfo);
   for (let i = 0; i < pollInfo.length; i++)
     if (pollInfo[i].pollId.toString() === poll_id.toString()) {
       console.log("MATCH FOUND");
