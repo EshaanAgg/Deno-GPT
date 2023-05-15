@@ -84,14 +84,16 @@ bot.command(
 );
 
 bot.on("poll_answer", async (ctx: customContext) => {
-  const poll_id = ctx.update?.poll_answer?.poll_id || -1;
+  const poll_id = ctx.update?.poll_answer?.poll_id;
   const opts_id = ctx.update?.poll_answer?.option_ids;
   const id = ctx.update?.poll_answer?.user?.id || 0;
 
-  const chosen_option = ctx.update.poll_answer.option_ids[0];
-  await update_question_status(ctx, poll_id, chosen_option, id);
+  const chosen_option = ctx.update?.poll_answer?.option_ids[0];
+  console.log("Called update_ques_status");
+  await update_question_status(ctx, poll_id!, chosen_option!, id.toString());
+  console.log("Done with update_ques_status");
 
-  if (poll_id == ctx.session.chatDescription[5]) {
+  if (poll_id == ctx.session.chatDescription[5].toString()) {
     await pollCreator(id, ctx);
   }
   await supabase

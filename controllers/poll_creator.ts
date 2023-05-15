@@ -72,12 +72,17 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       }
     );
 
+    console.log("Storing the information in session");
+
     // Store the information to map the polls to the questions
     ctx.session.pollInfo.push({
       pollId: return_msg.poll.id,
       questionId: qid,
       correctAnsIndex: ans_index,
     });
+
+    console.log("Stroed");
+    console.log(ctx.session.pollInfo);
 
     // Check if the row corresponding to this question and user exists in the database
     // and doing the necessary updates if not
@@ -86,14 +91,19 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       .select("*")
       .eq("question", qid.toString())
       .eq("user", id.toString());
-
+    console.log(data);
     if (!data) {
-      await supabase.from("user_progress").insert({
+      console.log("Inside no data");
+      const { data, error } = await supabase.from("user_progress").insert({
         question: qid.toString(),
         user: id.toString(),
         correct: false,
       });
+
+      console.log("Data", data);
+      console.log("Error", error);
     }
+    console.log("Exit");
   } catch (e) {
     console.log(e);
   }

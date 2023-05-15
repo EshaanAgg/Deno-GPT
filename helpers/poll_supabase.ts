@@ -10,6 +10,7 @@ export const update_question_status = async (
   const pollInfo: PollInfoType[] = ctx.session.pollInfo;
   for (let i = 0; i < pollInfo.length; i++)
     if (pollInfo[i].pollId.toString() === poll_id.toString()) {
+      console.log("MATCH FOUND");
       const { error } = await supabase
         .from("user_progress")
         .update({ correct: chosen_option == pollInfo[i].correctAnsIndex })
@@ -21,6 +22,7 @@ export const update_question_status = async (
           "Unexpected error occured in Supabase Call in update_question_status handler:\n",
           error
         );
-      break;
+      return;
     }
+  console.log("No match found");
 };
