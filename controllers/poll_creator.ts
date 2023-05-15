@@ -55,7 +55,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     return;
   }
 
-  const [question, options, ans, ___, ____] = session[i];
+  const [question, qid, options, ans, ___, ____] = session[i];
   const ans_index = options.indexOf(ans);
 
   try {
@@ -71,6 +71,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
         explanation: "Insert explanation here.",
       }
     );
+    console.log("In poll creator\n", return_msg.poll);
   } catch (e) {
     console.log(e);
   }

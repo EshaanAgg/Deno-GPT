@@ -16,7 +16,14 @@ interface QuestionInterface {
 const get_session_entry = (q: QuestionInterface) => {
   const options = [q.A, q.B, q.C, q.D];
   const option_ids = options.map((_, index) => `${q.id}-${index}`);
-  return [q.question, options, options[q.ans], option_ids, option_ids[q.ans]];
+  return [
+    q.question,
+    q.id,
+    options,
+    options[q.ans],
+    option_ids,
+    option_ids[q.ans],
+  ];
 };
 
 const is_valid_question = (q: QuestionInterface): boolean => {
