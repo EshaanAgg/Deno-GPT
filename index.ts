@@ -11,10 +11,8 @@ import { pollCreator } from "./controllers/poll_creator.ts";
 import { BOT_NAME, allDecks, cmd } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
-import {
-  send_help,
-  toggle_show_all_questions,
-} from "./controllers/utilities.ts";
+import { send_help, set_settings } from "./controllers/utilities.ts";
+import { set_question_preference } from "./controllers/set_question_preference.ts";
 import { chatDescription, customContext } from "./types.ts";
 import { file_upload_handler } from "./controllers/file_upload.ts";
 
@@ -35,7 +33,7 @@ bot.use(
       // deno-lint-ignore prefer-const
       let obj = {
         chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
-        showAllQuestions: false,
+        questionPreference: 5,
       };
       return obj;
     },
@@ -70,8 +68,8 @@ bot.command(cmd, async (ctx: customContext) => {
   await pick_deck(ctx.msg?.chat?.id || 0, ctx);
 });
 
-bot.command("toggle", async (ctx: customContext) => {
-  await toggle_show_all_questions(ctx.msg?.chat?.id || 0, ctx);
+bot.command("settings", async (ctx: customContext) => {
+  await set_settings(ctx.msg?.chat?.id || 0, ctx);
 });
 
 bot.command(
@@ -103,6 +101,13 @@ bot.on(":file", async (ctx: customContext) => {
 
 bot.command("random", async (ctx: customContext) => {
   await new_deck(ctx.msg?.chat.id || 0, ctx);
+});
+
+bot.command("message", async (ctx: customContext) => {
+  const message: string = ctx.message;
+  if (message.indexOf("setQuestion:") != -1)
+    await set_question_preference(message, ctx);
+  else ctx.reply("Unrecognised command!");
 });
 
 const handleUpdate = webhookCallback(bot, "std/http", {

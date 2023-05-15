@@ -81,10 +81,10 @@ export const file_upload_handler = async (ctx: customContext) => {
                         {
                             "question": "Which is the first state to launch a mobile app for COVID-19 vaccination?",
                             "options": [
-                                "A. Kerala",
-                                "B. Maharashtra",
-                                "C. Tamil Nadu",
-                                "D. Karnataka"
+                                "Kerala",
+                                "Maharashtra",
+                                "Tamil Nadu",
+                                "Karnataka"
                             ],
                             "answer": 0
                         },

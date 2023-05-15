@@ -38,20 +38,22 @@ export const send_help = async (id: number, ctx: customContext) => {
   }
 };
 
-export const toggle_show_all_questions = async (
-  id: number,
-  ctx: customContext
-) => {
-  ctx.session.showAllQuestions = !ctx.session.showAllQuestions;
-
+export const set_settings = async (id: number, ctx: customContext) => {
   let message = "";
-  if (ctx.session.showAllQuestions)
-    message = "You will see all the questions for each deck!";
+  if (ctx.session.questionPreference == 0)
+    message =
+      "You will currently see all the questions that we listed for a deck.";
+  else if (ctx.session.questionPreference == -1)
+    message =
+      "You will currently see all the questions which you had answered incorrectly from the previous sessions when you choose a deck.";
   else
-    message = "You will only see a limited number (5) questions for each deck!";
+    message = `You will only see ${ctx.session.questionPreference} randomly chosen questions for a deck.`;
 
-  message +=
-    "\n\nYou can toggle this functionality by using this command again!";
+  message += `\n\nYou can change this behaviour by sending the following text:\n
+    setQuestion:ALL (Will show all questions in a deck)\n
+    setQuestion:INC (Will show all questions which you had attempted incorrectly previously)\n
+    setQuestion:XY  (Will show XY questions for each deck. Note that XY must always be a two digit number like 05, 10, 99 etc)\n\n
+    Please note that all the commands are case sensitive.`;
 
   const msg = await ctx.api.sendMessage(id, message);
   try {

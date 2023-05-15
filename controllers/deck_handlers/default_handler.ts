@@ -1,6 +1,6 @@
 import { randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
-import { MAXIMUM_QUESTIONS_IN_ONE_GO } from "../../constants.ts";
+
 interface QuestionInterface {
   id: string;
   question: string;
@@ -41,8 +41,7 @@ const transform_question_options = (
 
 export const default_handler = async (
   deck: string,
-  number_of_questions: number,
-  show_all_questions: boolean
+  number_of_questions: number
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data, error } = await supabase
@@ -54,8 +53,6 @@ export const default_handler = async (
 
   const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
   const questions = [];
-
-  if (show_all_questions) number_of_questions = MAXIMUM_QUESTIONS_IN_ONE_GO;
 
   let index = 0;
   while (

@@ -18,17 +18,8 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   let session: any[][] = [];
 
   if (deck === "assorted")
-    session = await default_handler(
-      "default",
-      max_per_day,
-      ctx.session.showAllQuestions
-    );
-  else
-    session = await default_handler(
-      deck,
-      max_per_day,
-      ctx.session.showAllQuestions
-    );
+    session = await default_handler("default", max_per_day);
+  else session = await default_handler(deck, max_per_day);
 
   ctx.session.chatDescription = [0, deck, session, 0, 0, 0];
 

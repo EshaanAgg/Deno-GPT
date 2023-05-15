@@ -7,6 +7,11 @@ import {
 export type chatDescription = [number, string, any[][], number, number, number];
 interface SessionData {
   chatDescription: chatDescription;
-  showAllQuestions: boolean;
+  /*
+   * Set to 1-100 to indicate the question count
+   * Set to 0 to indicate all questions
+   * Set to -1 to indicate all the questions which were previously incorrect
+   */
+  questionPreference: number;
 }
 export type customContext = Context & SessionFlavor<SessionData>;
