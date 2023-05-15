@@ -93,7 +93,7 @@ bot.on("poll_answer", async (ctx: customContext) => {
   await update_question_status(ctx, poll_id!, chosen_option!, id.toString());
   console.log("Done with update_ques_status");
 
-  if (poll_id == ctx.session.chatDescription[5].toString()) {
+  if (poll_id?.toString() == ctx.session.chatDescription[5].toString()) {
     await pollCreator(id, ctx);
   }
   await supabase
@@ -111,7 +111,7 @@ bot.command("random", async (ctx: customContext) => {
 });
 
 bot.on("message", async (ctx: customContext) => {
-  const message: string = ctx.message.text;
+  const message: string = ctx.message!.text!;
   if (message.indexOf("setQuestion:") != -1)
     await set_question_preference(message, ctx);
   else ctx.reply("Unrecognized command!");

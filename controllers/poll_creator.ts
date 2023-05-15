@@ -91,8 +91,9 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       .select("*")
       .eq("question", qid.toString())
       .eq("user", id.toString());
+
     console.log(data);
-    if (!data) {
+    if (!data || data.length == 0) {
       console.log("Inside no data");
       const { data, error } = await supabase.from("user_progress").insert({
         question: qid.toString(),
