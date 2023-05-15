@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 import { randomSample, randomShuffle } from "../helper.ts";
 import supabase from "../supabaseClient.ts";
 import { decks } from "../constants.ts";

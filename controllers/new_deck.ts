@@ -4,7 +4,6 @@ import supabase from "../supabaseClient.ts";
 import { pollCreator } from "./poll_creator.ts";
 import { customContext, chatDescription } from "../types.ts";
 import { default_handler } from "./deck_handlers/default_handler.ts";
-import { chat_gpt_handler } from "./deck_handlers/chat_gpt_handler.ts";
 
 export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   ctx.session.chatDescription = [0, "", [], 0, 0, 0] as chatDescription;
@@ -18,8 +17,12 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
 
-  if (deck === "Chat_GPT")
-    session = await chat_gpt_handler(max_per_day, ctx.session.showAllQuestions);
+  if (deck === "assorted")
+    session = await default_handler(
+      "default",
+      max_per_day,
+      ctx.session.showAllQuestions
+    );
   else
     session = await default_handler(
       deck,

@@ -1,5 +1,5 @@
 import supabase from "../supabaseClient.ts";
-import { BOT_NAME, decks, texts } from "../constants.ts";
+import { BOT_NAME, allDecks, texts } from "../constants.ts";
 import { counter, mostCommon, toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 
@@ -36,7 +36,7 @@ export const pick_deck = async (id: number, ctx: customContext) => {
   // deno-lint-ignore prefer-const
   let deckcolor: { [key: string]: string } = {};
 
-  for (const deck in decks) {
+  for (const deck in allDecks) {
     if (deckstats.deck !== undefined) deckcolor[deck] = choices[2];
     else if (mostCommonDecks.includes(deck)) deckcolor[deck] = choices[0];
     else deckcolor[deck] = choices[1];
@@ -44,10 +44,10 @@ export const pick_deck = async (id: number, ctx: customContext) => {
 
   const keyboard = new InlineKeyboard();
   let index = 0;
-  for (const deck in decks) {
+  for (const deck in allDecks) {
     keyboard.text(
       `${deckcolor[deck]} ${toTitleCase(deck.replace("_", " "))}`,
-      `/${deck}`,
+      `/${deck}`
     );
     if (index % 2 == 1) keyboard.row();
     index++;

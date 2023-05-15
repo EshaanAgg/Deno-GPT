@@ -8,7 +8,7 @@ import {
 import { ltrim } from "./helper.ts";
 import supabase from "./supabaseClient.ts";
 import { pollCreator } from "./controllers/poll_creator.ts";
-import { BOT_NAME, cmd, decks } from "./constants.ts";
+import { BOT_NAME, allDecks, cmd } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
 import {
@@ -45,7 +45,7 @@ bot.use(
 bot.on("callback_query:data", async (ctx: customContext) => {
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
   const message_id = ctx.callbackQuery?.message?.message_id || 0;
-  if (decks[data] !== undefined) {
+  if (allDecks.indexOf(data) !== u - 1) {
     await ctx.answerCallbackQuery({
       text: "Loading your session!",
     });

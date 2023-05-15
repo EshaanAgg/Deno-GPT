@@ -1,45 +1,45 @@
 import { toTitleCase } from "./helper.ts";
 
-export const decks: { [key: string]: [string, string, string][] } = {
-  amendments: [
-    [
-      "When was the [MASK] Amendment made to the Indian Constitution?",
-      "ordinal",
-      "year",
-    ],
-    ["What was the [MASK] Amendment about?", "ordinal", "description"],
-    ["Which Amendment brought about [MASK]", "description", "ordinal"],
-  ],
-  indices: [
-    ["Who releases the [MASK]?", "index", "organization"],
-    ["What is India's Ranking in the most recent [MASK]?", "index", "ranking"],
-  ],
-  reports: [["Who releases the [MASK]?", "report", "organization"]],
-  battles: [
-    ["Describe the [MASK]", "BattleName", "Description"],
-    ["When was the [MASK] fought?", "BattleName", "Year"],
-    ["Which battle was fought in [MASK]", "Year", "BattleName"],
-    ["Which battle was fought in [MASK]", "Year", "Description"],
-  ],
-  revolts: [
-    ["Who led the [MASK]?", "name", "leaders"],
-    ["[MASK] led which revolt?", "leaders", "name"],
-  ],
-  newspapers: [["Who founded [MASK]?", "newspaper", "founder"]],
-  fundamental_rights: [
-    [
-      "Which Article of the Indian Constitution is about [MASK]?",
-      "description",
-      "number",
-    ],
-    [
-      "Article [MASK] of the Indian Constitution is about:",
-      "number",
-      "description",
-    ],
-  ],
-  Chat_GPT: [],
-};
+// Deprecate the template decks as they are not used anymore
+// export const decks: { [key: string]: [string, string, string][] } = {
+//   amendments: [
+//     [
+//       "When was the [MASK] Amendment made to the Indian Constitution?",
+//       "ordinal",
+//       "year",
+//     ],
+//     ["What was the [MASK] Amendment about?", "ordinal", "description"],
+//     ["Which Amendment brought about [MASK]", "description", "ordinal"],
+//   ],
+//   indices: [
+//     ["Who releases the [MASK]?", "index", "organization"],
+//     ["What is India's Ranking in the most recent [MASK]?", "index", "ranking"],
+//   ],
+//   reports: [["Who releases the [MASK]?", "report", "organization"]],
+//   battles: [
+//     ["Describe the [MASK]", "BattleName", "Description"],
+//     ["When was the [MASK] fought?", "BattleName", "Year"],
+//     ["Which battle was fought in [MASK]", "Year", "BattleName"],
+//     ["Which battle was fought in [MASK]", "Year", "Description"],
+//   ],
+//   revolts: [
+//     ["Who led the [MASK]?", "name", "leaders"],
+//     ["[MASK] led which revolt?", "leaders", "name"],
+//   ],
+//   newspapers: [["Who founded [MASK]?", "newspaper", "founder"]],
+//   fundamental_rights: [
+//     [
+//       "Which Article of the Indian Constitution is about [MASK]?",
+//       "description",
+//       "number",
+//     ],
+//     [
+//       "Article [MASK] of the Indian Constitution is about:",
+//       "number",
+//       "description",
+//     ],
+//   ],
+// };
 
 export const allDecks = [
   "amendments",
@@ -49,7 +49,7 @@ export const allDecks = [
   "revolts",
   "newspapers",
   "fundamental_rights",
-  "Chat_GPT",
+  "assorted",
 ];
 export const allDecksString = allDecks.map((deck) => toTitleCase(deck));
 
