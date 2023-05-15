@@ -36,22 +36,22 @@ export const pick_deck = async (id: number, ctx: customContext) => {
   // deno-lint-ignore prefer-const
   let deckcolor: { [key: string]: string } = {};
 
-  for (const deck in allDecks) {
+  allDecks.forEach((deck) => {
     if (deckstats.deck !== undefined) deckcolor[deck] = choices[2];
     else if (mostCommonDecks.includes(deck)) deckcolor[deck] = choices[0];
     else deckcolor[deck] = choices[1];
-  }
+  });
 
   const keyboard = new InlineKeyboard();
   let index = 0;
-  for (const deck in allDecks) {
+  allDecks.forEach((deck) => {
     keyboard.text(
       `${deckcolor[deck]} ${toTitleCase(deck.replace("_", " "))}`,
       `/${deck}`
     );
     if (index % 2 == 1) keyboard.row();
     index++;
-  }
+  });
 
   const msg = await ctx.api.sendMessage(id, "Choose a deck to revise!", {
     reply_markup: keyboard,
