@@ -10,6 +10,8 @@ export const file_upload_handler = async (ctx: customContext) => {
     "TELEGRAM_BOT_TOKEN"
   )}/${file.file_path}`;
 
+  console.log(download_file_url);
+
   const userId = ctx.msg!.chat.id;
   if (!ADMIN_USER_IDS!.includes(userId.toString())) {
     ctx.reply(

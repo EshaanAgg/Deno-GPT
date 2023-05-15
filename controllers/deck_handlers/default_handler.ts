@@ -1,5 +1,3 @@
-import { Context } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
-import { randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
 
 interface QuestionInterface {
@@ -41,9 +39,9 @@ const transform_question_options = (
   q: QuestionInterface
 ): QuestionInterface => {
   if (q.A.slice(0, 3) == "A. ") q.A = q.A.slice(3);
-  if (q.B.slice(0, 3) == "A. ") q.B = q.B.slice(3);
-  if (q.C.slice(0, 3) == "A. ") q.C = q.C.slice(3);
-  if (q.D.slice(0, 3) == "A. ") q.D = q.D.slice(3);
+  if (q.B.slice(0, 3) == "B. ") q.B = q.B.slice(3);
+  if (q.C.slice(0, 3) == "C. ") q.C = q.C.slice(3);
+  if (q.D.slice(0, 3) == "D. ") q.D = q.D.slice(3);
   return q;
 };
 
@@ -53,14 +51,16 @@ const regularHandler = async (
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data, error } = await supabase
-    .from("chatgpt")
+    .from("random_questions")
     .select("*")
     .eq("deck", deck)
     .eq("confirmed", true);
+
   if (error) console.log(error);
+
   if (question_preference == 0) question_preference = 100;
 
-  const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
+  const shuffled_questions: QuestionInterface[] = data!;
   const questions = [];
 
   let index = 0;
@@ -92,16 +92,15 @@ const incorrectHandler = async (
   const incorrectQuestions = incorrectQuestionObjects!.map(
     (ques) => ques.question
   );
-  console.log(incorrectQuestions);
 
   const { data } = await supabase
-    .from("chatgpt")
+    .from("random_questions")
     .select("*")
     .eq("deck", deck)
     .eq("confirmed", true)
     .in("id", incorrectQuestions!);
 
-  const shuffled_questions: QuestionInterface[] = randomShuffle(data!);
+  const shuffled_questions: QuestionInterface[] = data!;
   const questions = [];
 
   let index = 0;
@@ -123,10 +122,8 @@ export const default_handler = async (
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   if (question_preference != -1) {
-    const ret = await regularHandler(deck, question_preference);
-    return ret;
+    return await regularHandler(deck, question_preference);
   }
 
-  const r = await incorrectHandler(deck, userId);
-  return r;
+  return await incorrectHandler(deck, userId);
 };
