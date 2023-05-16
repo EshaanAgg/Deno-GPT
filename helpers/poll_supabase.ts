@@ -5,10 +5,10 @@ export const update_question_status = async (
   ctx: customContext,
   poll_id: string,
   chosen_option: number,
-  userId: string
+  userId: string,
 ) => {
   const pollInfo: PollInfoType[] = ctx.session.pollInfo;
-  for (let i = 0; i < pollInfo.length; i++)
+  for (let i = 0; i < pollInfo.length; i++) {
     if (pollInfo[i].pollId.toString() === poll_id.toString()) {
       await supabase
         .from("user_progress")
@@ -21,4 +21,5 @@ export const update_question_status = async (
       ctx.session.pollInfo = pollInfo;
       return;
     }
+  }
 };

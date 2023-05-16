@@ -2,7 +2,7 @@ import { randomChoice } from "../helper.ts";
 import { allDecks, BOT_NAME } from "../constants.ts";
 import supabase from "../supabaseClient.ts";
 import { pollCreator } from "./poll_creator.ts";
-import { customContext, chatDescription } from "../types.ts";
+import { chatDescription, customContext } from "../types.ts";
 import { default_handler } from "./deck_handlers/default_handler.ts";
 
 export const new_deck = async (id: number, ctx: customContext, deck = "") => {
@@ -14,19 +14,20 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
 
-  if (deck === "assorted")
+  if (deck === "assorted") {
     session = await default_handler(
       "default",
       ctx.session.questionPreference,
-      id
+      id,
     );
-  else
+  } else {
     session = await default_handler(deck, ctx.session.questionPreference, id);
+  }
 
   ctx.session.chatDescription = [0, deck, session, 0, 0, "0"];
 
   ctx.reply(
-    `${session.length} questions would be displayed now on the basis of your question preference. `
+    `${session.length} questions would be displayed now on the basis of your question preference. `,
   );
 
   // deno-lint-ignore no-unused-vars

@@ -4,8 +4,8 @@ import { randomSample, randomShuffle } from "../../helper.ts";
 import supabase from "../../supabaseClient.ts";
 import {
   decks,
-  N_OPTIONS,
   MAXIMUM_QUESTIONS_IN_ONE_GO,
+  N_OPTIONS,
 } from "../../constants.ts";
 
 const generate_all_questions = async (deck: string) => {
@@ -48,11 +48,12 @@ const generate_all_questions = async (deck: string) => {
 export const default_handler = async (
   deck: string,
   max_per_day: number,
-  show_all_questions: boolean
+  show_all_questions: boolean,
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const session_data = await generate_all_questions(deck);
-  if (show_all_questions)
+  if (show_all_questions) {
     max_per_day = Math.min(MAXIMUM_QUESTIONS_IN_ONE_GO, session_data.length);
+  }
   return session_data.slice(0, max_per_day);
 };

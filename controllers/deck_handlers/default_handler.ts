@@ -36,7 +36,7 @@ const is_valid_question = (q: QuestionInterface): boolean => {
 };
 
 const transform_question_options = (
-  q: QuestionInterface
+  q: QuestionInterface,
 ): QuestionInterface => {
   if (q.A.slice(0, 3) == "A. ") q.A = q.A.slice(3);
   if (q.B.slice(0, 3) == "B. ") q.B = q.B.slice(3);
@@ -47,7 +47,7 @@ const transform_question_options = (
 
 const regularHandler = async (
   deck: string,
-  question_preference: number
+  question_preference: number,
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data, error } = await supabase
@@ -68,10 +68,13 @@ const regularHandler = async (
     questions.length < question_preference &&
     index < shuffled_questions.length
   ) {
-    if (is_valid_question(shuffled_questions[index]))
+    if (is_valid_question(shuffled_questions[index])) {
       questions.push(
-        get_session_entry(transform_question_options(shuffled_questions[index]))
+        get_session_entry(
+          transform_question_options(shuffled_questions[index]),
+        ),
       );
+    }
     index++;
   }
 
@@ -80,7 +83,7 @@ const regularHandler = async (
 
 const incorrectHandler = async (
   deck: string,
-  userId: number
+  userId: number,
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   const { data: incorrectQuestionObjects } = await supabase
@@ -90,7 +93,7 @@ const incorrectHandler = async (
     .eq("correct", false);
 
   const incorrectQuestions = incorrectQuestionObjects!.map(
-    (ques) => ques.question
+    (ques) => ques.question,
   );
 
   const { data } = await supabase
@@ -100,15 +103,18 @@ const incorrectHandler = async (
     .eq("confirmed", true)
     .in("id", incorrectQuestions!);
 
-  const shuffled_questions: QuestionInterface[] = data!;
+  const shuffled_questions: QuestionInterface[] = data || [];
   const questions = [];
 
   let index = 0;
   while (questions.length < 100 && index < shuffled_questions.length) {
-    if (is_valid_question(shuffled_questions[index]))
+    if (is_valid_question(shuffled_questions[index])) {
       questions.push(
-        get_session_entry(transform_question_options(shuffled_questions[index]))
+        get_session_entry(
+          transform_question_options(shuffled_questions[index]),
+        ),
       );
+    }
     index++;
   }
 
@@ -118,7 +124,7 @@ const incorrectHandler = async (
 export const default_handler = async (
   deck: string,
   question_preference: number,
-  userId: number
+  userId: number,
   // deno-lint-ignore no-explicit-any
 ): Promise<any[][]> => {
   if (question_preference != -1) {

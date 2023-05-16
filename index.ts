@@ -8,7 +8,7 @@ import {
 import { ltrim } from "./helper.ts";
 import supabase from "./supabaseClient.ts";
 import { pollCreator } from "./controllers/poll_creator.ts";
-import { BOT_NAME, allDecks, cmd } from "./constants.ts";
+import { allDecks, BOT_NAME, cmd } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
 import { send_help, set_settings } from "./controllers/utilities.ts";
@@ -38,7 +38,7 @@ bot.use(
       };
       return obj;
     },
-  })
+  }),
 );
 
 bot.on("callback_query:data", async (ctx: customContext) => {
@@ -51,7 +51,8 @@ bot.on("callback_query:data", async (ctx: customContext) => {
     await new_deck(ctx.msg?.chat?.id || 0, ctx, data);
   } else {
     await ctx.answerCallbackQuery({
-      text: "I'm sorry I didn't get that. Please choose a command from the dropdown.",
+      text:
+        "I'm sorry I didn't get that. Please choose a command from the dropdown.",
     });
   }
   try {
@@ -75,12 +76,12 @@ bot.command("settings", async (ctx: customContext) => {
 
 bot.command(
   "help",
-  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx)
+  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx),
 );
 
 bot.command(
   "start",
-  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx)
+  async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx),
 );
 
 bot.on("poll_answer", async (ctx: customContext) => {
@@ -111,9 +112,9 @@ bot.command("random", async (ctx: customContext) => {
 
 bot.on("message", async (ctx: customContext) => {
   const message: string = ctx.message!.text!;
-  if (message.indexOf("setQuestion:") != -1)
+  if (message.indexOf("setQuestion:") != -1) {
     await set_question_preference(message, ctx);
-  else ctx.reply("Unrecognized command!");
+  } else ctx.reply("Unrecognized command!");
 });
 
 const handleUpdate = webhookCallback(bot, "std/http", {
@@ -132,10 +133,12 @@ serve(async (req) => {
     }
   } else if (req.method === "GET") {
     const body = await req.json();
-    if (body.data)
+    if (body.data) {
       await bot.api.sendMessage(body.userId, `Success! ${body.data.message}`);
-    if (body.error)
+    }
+    if (body.error) {
       await bot.api.sendMessage(body.userId, `Error! ${body.error.message}`);
+    }
   }
   return new Response();
 });

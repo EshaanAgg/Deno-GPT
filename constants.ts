@@ -124,7 +124,8 @@ export const texts = {
   archive_res: "Got rid of that for you 🔥",
   "": "",
   complete: `Deck revision complete! Send /${cmd} to start another!`,
-  help: `Saras is your daily self-revision guide for UPSC decks. Just select /${cmd} from the options to the left of your keypad or type and send /${cmd} in chat, to start!\n\n
+  help:
+    `Saras is your daily self-revision guide for UPSC decks. Just select /${cmd} from the options to the left of your keypad or type and send /${cmd} in chat, to start!\n\n
         Decks on Saras: ${allDecksString}. \n\n
         We will soon add more decks and features. Please share your feedback with us at +1 213 374 6583.`,
 };

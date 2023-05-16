@@ -1,5 +1,5 @@
 import supabase from "../supabaseClient.ts";
-import { BOT_NAME, allDecks, texts } from "../constants.ts";
+import { allDecks, BOT_NAME, texts } from "../constants.ts";
 import { counter, mostCommon, toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 
@@ -47,7 +47,7 @@ export const pick_deck = async (id: number, ctx: customContext) => {
   allDecks.forEach((deck) => {
     keyboard.text(
       `${deckcolor[deck]} ${toTitleCase(deck.replace("_", " "))}`,
-      `/${deck}`
+      `/${deck}`,
     );
     if (index % 2 == 1) keyboard.row();
     index++;

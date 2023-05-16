@@ -14,7 +14,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       id,
       toTitleCase(deck.replace("_", " ")) +
         ": " +
-        get_progress(i, session.length)
+        get_progress(i, session.length),
     );
     if (i > 1) {
       try {
@@ -28,7 +28,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
   if (i == session.length) {
     const congrats_message = await ctx.api.sendSticker(
       id,
-      randomChoice(STICKERS)
+      randomChoice(STICKERS),
     );
 
     const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
@@ -68,7 +68,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       type: "quiz",
       correct_option_id: ans_index,
       explanation: "Insert explanation here.",
-    }
+    },
   );
 
   // Store the information to map the polls to the questions
