@@ -123,6 +123,15 @@ const handleUpdate = webhookCallback(bot, "std/http", {
 
 serve(async (req) => {
   if (req.method === "POST") {
+    const body = await req.json();
+
+    if (body.from == "Supabase" && body.data) {
+      await bot.api.sendMessage(body.userId, `Success! ${body.data.message}`);
+    }
+    if (body.from == "Supabase" && body.error) {
+      await bot.api.sendMessage(body.userId, `Error! ${body.error.message}`);
+    }
+
     const url = new URL(req.url);
     if (url.pathname.slice(1) === bot.token) {
       try {
@@ -130,14 +139,6 @@ serve(async (req) => {
       } catch (err) {
         console.error(err);
       }
-    }
-  } else if (req.method === "GET") {
-    const body = await req.json();
-    if (body.data) {
-      await bot.api.sendMessage(body.userId, `Success! ${body.data.message}`);
-    }
-    if (body.error) {
-      await bot.api.sendMessage(body.userId, `Error! ${body.error.message}`);
     }
   }
   return new Response();

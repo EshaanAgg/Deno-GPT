@@ -6,7 +6,12 @@ Answer only in json with keys "question", "options" which is a list of four stri
     "questions": [
         {
             "question": "Which is the first state to launch a mobile app for COVID-19 vaccination?",
-            "options": ["Kerala", "Maharashtra", "Tamil Nadu", "Karnataka"],
+            "options": [
+              "A. Kerala", 
+              "B. Maharashtra", 
+              "C. Tamil Nadu", 
+              "D. Karnataka"
+            ],
             "answer": 0
         },
         {
@@ -15,6 +20,7 @@ Answer only in json with keys "question", "options" which is a list of four stri
     ]
 }
 
+The content that you must generate the question from is as follows:
 `;
 
 export interface GPTQuestion {

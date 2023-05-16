@@ -15,11 +15,12 @@ const supabase = createClient(supabaseUrl, supabaseKey!);
 
 const sendError = (message: string, userId: string) => {
   fetch(DENO_DEPLOYED_LINK, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
+      from: "Supabase",
       error: { message },
       userId,
     }),
@@ -30,11 +31,12 @@ const sendError = (message: string, userId: string) => {
 
 const sendSuccess = (message: string, userId: string) => {
   fetch(DENO_DEPLOYED_LINK, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
+      from: "Supabase",
       data: { message },
       userId,
     }),
@@ -84,7 +86,6 @@ serve(async (req) => {
     );
   }
 
-  console.log(pdf_to_text_json);
   const text_url = pdf_to_text_json["Files"][0]["Url"];
   const content_response = await fetch(text_url);
   const content = await content_response.text();
@@ -130,13 +131,14 @@ serve(async (req) => {
     }
 
     const question_content = gpt_json.choices[0].message.content;
+
     let question_json;
 
     try {
       question_json = JSON.parse(question_content);
-    } catch (err) {
+    } catch (_err) {
       return sendError(
-        `The parsing of JSON from the ChatGPT response failed with the following message: ${err.message}`,
+        `The parsing of JSON from the ChatGPT response failed with the following message: ${question_content}`,
         userId,
       );
     }
