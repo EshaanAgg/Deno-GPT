@@ -1,7 +1,7 @@
 import { customContext } from "../types.ts";
 
-const API_BASE_URL = "https://v2.convertapi.com/convert/pdf/to/txt";
-const EDGE_FUNCTION_URL = "";
+const EDGE_FUNCTION_URL =
+  "https://gomhtyyltrqyoflqrgvy.functions.supabase.co/question_generate";
 
 export const file_upload_handler = async (ctx: customContext) => {
   const file = await ctx.getFile();
