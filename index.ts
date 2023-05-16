@@ -130,6 +130,12 @@ serve(async (req) => {
         console.error(err);
       }
     }
+  } else if (req.method === "GET") {
+    const body = await req.json();
+    if (body.data)
+      await bot.api.sendMessage(body.userId, `Success! ${body.data.message}`);
+    if (body.error)
+      await bot.api.sendMessage(body.userId, `Error! ${body.error.message}`);
   }
   return new Response();
 });
