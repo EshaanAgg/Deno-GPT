@@ -2,7 +2,6 @@ import supabase from "../supabaseClient.ts";
 import { allDecks, BOT_NAME, texts } from "../constants.ts";
 import { counter, mostCommon, toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
-
 import { InlineKeyboard } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
 
 export const pick_deck = async (id: number, ctx: customContext) => {

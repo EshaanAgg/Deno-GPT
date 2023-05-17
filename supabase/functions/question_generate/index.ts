@@ -45,6 +45,7 @@ const makeChatGPTAPIRequest = async (
   i: number,
   content: string,
   userId: string,
+  deckName: string,
 ) => {
   const chat_gpt_request = new Request(
     "https://api.openai.com/v1/chat/completions",
@@ -108,6 +109,7 @@ const makeChatGPTAPIRequest = async (
     C: ques.options[2].slice(3),
     D: ques.options[3].slice(3),
     ans: ques.answer,
+    deckName,
   }));
 
   await supabase.from("chatgpt_generated").insert(questions).select();
@@ -124,7 +126,7 @@ const makeChatGPTAPIRequest = async (
 };
 
 serve(async (req) => {
-  const { download_file_url, userId } = await req.json();
+  const { download_file_url, userId, deckName } = await req.json();
 
   // Initial authentication of the user
   if (!ADMIN_USER_IDS!.includes(userId.toString())) {
@@ -189,7 +191,7 @@ serve(async (req) => {
   for (let i = 0; i < content_chunks.length; i++) {
     // Make API call to Supabase for each of the content chunks
     const content = content_chunks[i];
-    allRequests.push(makeChatGPTAPIRequest(i, content, userId));
+    allRequests.push(makeChatGPTAPIRequest(i, content, userId, deckName));
   }
 
   let successful_request_count = 0, failed_requests_count = 0;

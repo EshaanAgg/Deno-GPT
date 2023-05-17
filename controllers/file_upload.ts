@@ -11,9 +11,19 @@ export const file_upload_handler = async (ctx: customContext) => {
     )
   }/${file.file_path}`;
 
+  ctx.session.uploadedFileLink = download_file_url;
   console.log(download_file_url);
 
+  await ctx.reply(
+    `The file upload was successful! Please choose a name for the deck. Set a text of the form "DeckName:<YOUR_DECK_NAME_WITHOUT_SPACES>" to continue with the request.`,
+  );
+};
+
+export const upload_new_deck = async (message: string, ctx: customContext) => {
+  const deckName = message.slice(9, message.length);
   const userId = ctx.msg!.chat.id;
+
+  await ctx.reply(`Recieved deck name: ${deckName}`);
 
   fetch(EDGE_FUNCTION_URL, {
     method: "POST",
@@ -21,8 +31,9 @@ export const file_upload_handler = async (ctx: customContext) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      download_file_url,
+      download_file_url: ctx.session.uploadedFileLink,
       userId,
+      deckName,
     }),
   });
 

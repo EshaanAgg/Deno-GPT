@@ -11,10 +11,19 @@ import { pollCreator } from "./controllers/poll_creator.ts";
 import { allDecks, BOT_NAME, cmd } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
+import {
+  approve_deck,
+  discard_deck,
+  handle_deck_verification,
+  verify_decks,
+} from "./controllers/verify_decks.ts";
 import { send_help, set_settings } from "./controllers/utilities.ts";
 import { set_question_preference } from "./controllers/set_question_preference.ts";
 import { chatDescription, customContext } from "./types.ts";
-import { file_upload_handler } from "./controllers/file_upload.ts";
+import {
+  file_upload_handler,
+  upload_new_deck,
+} from "./controllers/file_upload.ts";
 import { update_question_status } from "./helpers/poll_supabase.ts";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
@@ -35,6 +44,7 @@ bot.use(
         chatDescription: [0, "", [], 0, 0, 0] as chatDescription,
         questionPreference: 5,
         pollInfo: [],
+        uploadedFileLink: null,
       };
       return obj;
     },
@@ -43,6 +53,15 @@ bot.use(
 
 bot.on("callback_query:data", async (ctx: customContext) => {
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
+  if (data.slice(0, 7) == "verify-") {
+    await handle_deck_verification(ctx, data.slice(7));
+  }
+  if (data.slice(0, 8) == "approve-") {
+    await approve_deck(ctx, data.slice(8));
+  }
+  if (data.slice(0, 8) == "discard-") {
+    await discard_deck(ctx, data.slice(8));
+  }
   const message_id = ctx.callbackQuery?.message?.message_id || 0;
   if (allDecks.indexOf(data) !== -1) {
     await ctx.answerCallbackQuery({
@@ -110,10 +129,16 @@ bot.command("random", async (ctx: customContext) => {
   await new_deck(ctx.msg?.chat.id || 0, ctx);
 });
 
+bot.command("verify", async (ctx: customContext) => {
+  await verify_decks(ctx);
+});
+
 bot.on("message", async (ctx: customContext) => {
   const message: string = ctx.message!.text!;
   if (message.indexOf("setQuestion:") != -1) {
     await set_question_preference(message, ctx);
+  } else if (message.indexOf("DeckName:") != -1) {
+    await upload_new_deck(message, ctx);
   } else ctx.reply("Unrecognized command!");
 });
 

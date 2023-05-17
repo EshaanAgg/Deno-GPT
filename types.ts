@@ -20,5 +20,6 @@ interface SessionData {
    */
   questionPreference: number;
   pollInfo: PollInfoType[];
+  uploadedFileLink: string | null;
 }
 export type customContext = Context & SessionFlavor<SessionData>;
