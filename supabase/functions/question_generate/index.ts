@@ -15,7 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseKey!);
 
 const sendError = (message: string, userId: string) => {
   fetch(DENO_DEPLOYED_LINK, {
-    method: "POST",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
@@ -31,7 +31,7 @@ const sendError = (message: string, userId: string) => {
 
 const sendSuccess = (message: string, userId: string) => {
   fetch(DENO_DEPLOYED_LINK, {
-    method: "POST",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
