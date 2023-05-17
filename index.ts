@@ -136,8 +136,8 @@ serve(async (req) => {
   if (req.method == "PATCH") {
     const body = await req.json();
 
-    if (body.from == "Supabase" && body.data) {
-      await bot.api.sendMessage(body.userId, `Success! ${body.data.message}`);
+    if (body.from == "Supabase" && body.message) {
+      await bot.api.sendMessage(body.userId, body.message);
     }
     if (body.from == "Supabase" && body.error) {
       await bot.api.sendMessage(body.userId, `Error! ${body.error.message}`);

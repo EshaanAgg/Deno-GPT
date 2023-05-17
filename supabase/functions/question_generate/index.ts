@@ -1,5 +1,3 @@
-// supabase functions serve question_generate --env-file .env --debug
-
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { GPTQuestion, OPENAI_PROMPT } from "./constants.ts";
@@ -29,7 +27,7 @@ const sendError = (message: string, userId: string) => {
   return new Response();
 };
 
-const sendSuccess = (message: string, userId: string) => {
+const sendMessage = (message: string, userId: string) => {
   fetch(DENO_DEPLOYED_LINK, {
     method: "PATCH",
     headers: {
@@ -37,12 +35,10 @@ const sendSuccess = (message: string, userId: string) => {
     },
     body: JSON.stringify({
       from: "Supabase",
-      data: { message },
+      message,
       userId,
     }),
   });
-
-  return new Response();
 };
 
 serve(async (req) => {
@@ -90,11 +86,24 @@ serve(async (req) => {
   const content_response = await fetch(text_url);
   const content = await content_response.text();
 
+  sendMessage(
+    `The content has been parsed successfully from the pdf! The bot is now working on generating questions from the same. You can view the generated content by visiting ${text_url}`,
+    userId,
+  );
+
   // Split the content into multiple chunks of 3000 characters
   const content_chunks = [];
   for (let i = 0, charsLength = content.length; i < charsLength; i += 3000) {
     content_chunks.push(content.substring(i, i + 3000));
   }
+
+  sendMessage(
+    `The pdf has been split into ${content_chunks.length} number of sub pages! Making calls for each of them now.`,
+    userId,
+  );
+
+  let failed_requests_count = 0;
+  let successful_request_count = 0;
 
   for (let i = 0; i < content_chunks.length; i++) {
     // Make API call to Supabase for each of the content chunks
@@ -124,10 +133,14 @@ serve(async (req) => {
     const gpt_json = await gpt_response.json();
 
     if (gpt_json.error) {
-      return sendError(
-        `The content creation request failed due to an error from ChatGPT. Here is the recieved error message: ${gpt_json.error.message}`,
+      sendMessage(
+        `Error: The content creation of request number ${
+          i + 1
+        } failed due to an error from ChatGPT. Here is the recieved error message: ${gpt_json.error.message}`,
         userId,
       );
+      failed_requests_count += 1;
+      continue;
     }
 
     const question_content = gpt_json.choices[0].message.content;
@@ -137,10 +150,16 @@ serve(async (req) => {
     try {
       question_json = JSON.parse(question_content);
     } catch (_err) {
-      return sendError(
-        `The parsing of JSON from the ChatGPT response failed with the following message: ${question_content}`,
+      sendMessage(
+        `Error: The parsing of JSON from the ChatGPT response failed for request ${
+          i + 1
+        } as the ChatGPT response was: ${
+          question_content.slice(0, Math.min(500, question_content.length))
+        }.... which couldn't be paresed as JSON.`,
         userId,
       );
+      failed_requests_count++;
+      continue;
     }
 
     // Generate questions and save them to the Supabase table
@@ -154,10 +173,22 @@ serve(async (req) => {
     }));
 
     await supabase.from("chatgpt_generated").insert(questions).select();
+
+    successful_request_count += 1;
+    sendMessage(
+      `The questions from request ${
+        i + 1
+      } were successfully added to the database. `,
+      userId,
+    );
   }
 
-  return sendSuccess(
-    "All the questions have been temporarily stored in a table called 'chatgpt_generated' until they can be verified and added to additional decks!",
+  sendMessage(
+    `File upload operation complete. In all, ${
+      successful_request_count + failed_requests_count
+    } requests were made to ChatGPT, out of which ${successful_request_count} were successful and ${failed_requests_count} failed. `,
     userId,
   );
+
+  return new Response();
 });
