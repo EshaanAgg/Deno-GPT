@@ -14,15 +14,7 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   // deno-lint-ignore no-explicit-any
   let session: any[][] = [];
 
-  if (deck === "assorted") {
-    session = await default_handler(
-      "default",
-      ctx.session.questionPreference,
-      id,
-    );
-  } else {
-    session = await default_handler(deck, ctx.session.questionPreference, id);
-  }
+  session = await default_handler(deck, ctx.session.questionPreference, id);
 
   ctx.session.chatDescription = [0, deck, session, 0, 0, "0"];
 

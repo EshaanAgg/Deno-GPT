@@ -12,7 +12,7 @@ export const verify_decks = async (ctx: customContext) => {
 
   if (decks.length == 0) {
     await ctx.reply(
-      `There are no questions that are unverified that now! Victory!`,
+      `There are no questions that are unverified as of now! Victory!`,
     );
     return;
   }

@@ -8,7 +8,7 @@ import {
 import { ltrim } from "./helper.ts";
 import supabase from "./supabaseClient.ts";
 import { pollCreator } from "./controllers/poll_creator.ts";
-import { allDecks, BOT_NAME, cmd } from "./constants.ts";
+import { BOT_NAME, cmd } from "./constants.ts";
 import { pick_deck } from "./controllers/pick_deck.ts";
 import { new_deck } from "./controllers/new_deck.ts";
 import {
@@ -53,27 +53,34 @@ bot.use(
 
 bot.on("callback_query:data", async (ctx: customContext) => {
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
+  const message_id = ctx.callbackQuery?.message?.message_id || 0;
+
   if (data.slice(0, 7) == "verify-") {
     await handle_deck_verification(ctx, data.slice(7));
-  }
-  if (data.slice(0, 8) == "approve-") {
+  } else if (data.slice(0, 8) == "approve-") {
     await approve_deck(ctx, data.slice(8));
-  }
-  if (data.slice(0, 8) == "discard-") {
+  } else if (data.slice(0, 8) == "discard-") {
     await discard_deck(ctx, data.slice(8));
-  }
-  const message_id = ctx.callbackQuery?.message?.message_id || 0;
-  if (allDecks.indexOf(data) !== -1) {
-    await ctx.answerCallbackQuery({
-      text: "Loading your session!",
-    });
-    await new_deck(ctx.msg?.chat?.id || 0, ctx, data);
   } else {
-    await ctx.answerCallbackQuery({
-      text:
-        "I'm sorry I didn't get that. Please choose a command from the dropdown.",
-    });
+    const { data: deckData } = await supabase.from("verified_decks").select(
+      "*",
+    );
+    const isValidDeck = deckData!.some((deck) =>
+      deck.deck.toString().trim() == data.toString().trim()
+    );
+    if (isValidDeck) {
+      await ctx.answerCallbackQuery({
+        text: "Loading your session!",
+      });
+      await new_deck(ctx.msg?.chat?.id || 0, ctx, data);
+    } else {
+      await ctx.answerCallbackQuery({
+        text:
+          "I'm sorry I didn't get that. Please choose a command from the dropdown.",
+      });
+    }
   }
+
   try {
     await supabase.from("TempMsgs").insert({
       user: ctx.msg?.chat?.id || "0",
