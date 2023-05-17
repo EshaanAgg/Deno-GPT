@@ -41,6 +41,88 @@ const sendMessage = (message: string, userId: string) => {
   });
 };
 
+const makeChatGPTAPIRequest = async (
+  i: number,
+  content: string,
+  userId: string,
+) => {
+  const chat_gpt_request = new Request(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+        "OpenAI-Organization": "org-CG6c1ogVQGDmNhYh4x1MMZ8o",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "user",
+            content: `${OPENAI_PROMPT} ${content.toString().trim()}`,
+          },
+        ],
+      }),
+    },
+  );
+
+  const gpt_response = await fetch(chat_gpt_request);
+  const gpt_json = await gpt_response.json();
+
+  if (gpt_json.error) {
+    console.log(`${i} gpt_json_error`);
+    sendMessage(
+      `Error: The content creation of Request Number ${
+        i + 1
+      } failed due to an error from ChatGPT. Here is the recieved error message: ${gpt_json.error.message}`,
+      userId,
+    );
+    return -1;
+  }
+
+  const question_content = gpt_json.choices[0].message.content;
+
+  let question_json;
+
+  try {
+    question_json = JSON.parse(question_content);
+  } catch (_err) {
+    console.log(`${i} question_json_error`);
+    sendMessage(
+      `Error: The parsing of JSON from the ChatGPT response failed for Request ${
+        i + 1
+      }. The ChatGPT response was: \n\n${
+        question_content.slice(0, Math.min(500, question_content.length))
+      }.... \n\nwhich couldn't be paresed as JSON.`,
+      userId,
+    );
+    return -1;
+  }
+
+  // Generate questions and save them to the Supabase table
+  const questions = question_json.questions.map((ques: GPTQuestion) => ({
+    question: ques.question,
+    A: ques.options[0].slice(3),
+    B: ques.options[1].slice(3),
+    C: ques.options[2].slice(3),
+    D: ques.options[3].slice(3),
+    ans: ques.answer,
+  }));
+
+  await supabase.from("chatgpt_generated").insert(questions).select();
+
+  console.log(`${i} success`);
+  sendMessage(
+    `${questions.length} questions were generated as a part of Request ${
+      i + 1
+    } and were successfully added to the database. `,
+    userId,
+  );
+
+  return 1;
+};
+
 serve(async (req) => {
   const { download_file_url, userId } = await req.json();
 
@@ -98,90 +180,26 @@ serve(async (req) => {
   }
 
   sendMessage(
-    `The pdf has been split into ${content_chunks.length} number of sub pages! Making calls for each of them now.`,
+    `The pdf has been split into ${content_chunks.length} sub pages! Making calls for each of them now.`,
     userId,
   );
 
-  let failed_requests_count = 0;
-  let successful_request_count = 0;
+  const allRequests = [];
 
   for (let i = 0; i < content_chunks.length; i++) {
     // Make API call to Supabase for each of the content chunks
     const content = content_chunks[i];
-    const chat_gpt_request = new Request(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
-          "OpenAI-Organization": "org-CG6c1ogVQGDmNhYh4x1MMZ8o",
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "user",
-              content: `${OPENAI_PROMPT} ${content.toString().trim()}`,
-            },
-          ],
-        }),
-      },
-    );
-
-    const gpt_response = await fetch(chat_gpt_request);
-    const gpt_json = await gpt_response.json();
-
-    if (gpt_json.error) {
-      sendMessage(
-        `Error: The content creation of request number ${
-          i + 1
-        } failed due to an error from ChatGPT. Here is the recieved error message: ${gpt_json.error.message}`,
-        userId,
-      );
-      failed_requests_count += 1;
-      continue;
-    }
-
-    const question_content = gpt_json.choices[0].message.content;
-
-    let question_json;
-
-    try {
-      question_json = JSON.parse(question_content);
-    } catch (_err) {
-      sendMessage(
-        `Error: The parsing of JSON from the ChatGPT response failed for request ${
-          i + 1
-        } as the ChatGPT response was: ${
-          question_content.slice(0, Math.min(500, question_content.length))
-        }.... which couldn't be paresed as JSON.`,
-        userId,
-      );
-      failed_requests_count++;
-      continue;
-    }
-
-    // Generate questions and save them to the Supabase table
-    const questions = question_json.questions.map((ques: GPTQuestion) => ({
-      question: ques.question,
-      A: ques.options[0].slice(3),
-      B: ques.options[1].slice(3),
-      C: ques.options[2].slice(3),
-      D: ques.options[3].slice(3),
-      ans: ques.answer,
-    }));
-
-    await supabase.from("chatgpt_generated").insert(questions).select();
-
-    successful_request_count += 1;
-    sendMessage(
-      `The questions from request ${
-        i + 1
-      } were successfully added to the database. `,
-      userId,
-    );
+    allRequests.push(makeChatGPTAPIRequest(i, content, userId));
   }
+
+  let successful_request_count = 0, failed_requests_count = 0;
+
+  const apiCallResults = await Promise.all(allRequests);
+  console.log(apiCallResults);
+  apiCallResults.forEach((req) => {
+    if (req > 0) successful_request_count++;
+    else failed_requests_count++;
+  });
 
   sendMessage(
     `File upload operation complete. In all, ${
