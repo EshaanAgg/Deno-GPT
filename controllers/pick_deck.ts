@@ -1,5 +1,5 @@
 import supabase from "../supabaseClient.ts";
-import { allDecks, BOT_NAME, texts } from "../constants.ts";
+import { BOT_NAME, texts } from "../constants.ts";
 import { counter, mostCommon, toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 import { InlineKeyboard } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
@@ -34,6 +34,9 @@ export const pick_deck = async (id: number, ctx: customContext) => {
   const mostCommonDecks = mostCommon(deckstats, 2);
   // deno-lint-ignore prefer-const
   let deckcolor: { [key: string]: string } = {};
+
+  const { data: deckData } = await supabase.from("verified_decks").select("*");
+  const allDecks = deckData!.map((deck) => deck.deck);
 
   allDecks.forEach((deck) => {
     if (deckstats.deck !== undefined) deckcolor[deck] = choices[2];

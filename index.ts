@@ -130,7 +130,13 @@ bot.command("random", async (ctx: customContext) => {
 });
 
 bot.command("verify", async (ctx: customContext) => {
-  await verify_decks(ctx);
+  if (
+    !(Deno.env.get("ADMIN_USER_IDS")!.includes(ctx.msg!.chat!.id!.toString()))
+  ) {
+    await ctx.reply("You are not verified to perform this operation.");
+  } else {
+    await verify_decks(ctx);
+  }
 });
 
 bot.on("message", async (ctx: customContext) => {

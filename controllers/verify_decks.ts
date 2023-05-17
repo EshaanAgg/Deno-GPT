@@ -25,7 +25,7 @@ export const verify_decks = async (ctx: customContext) => {
   let index = 0;
   decks.forEach((deck) => {
     keyboard.text(
-      `${deck} ${toTitleCase(deck.replace("_", " "))}`,
+      toTitleCase(deck.replace("_", " ")),
       `/verify-${deck}`,
     );
     if (index % 2 == 1) keyboard.row();
@@ -111,7 +111,7 @@ export const approve_deck = async (
     D: que.D,
     ans: que.ans,
     deck,
-    confirmation: true,
+    confirmed: true,
   }));
 
   await supabase.from("chatgpt").insert(questions);
