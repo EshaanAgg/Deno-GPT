@@ -1,4 +1,5 @@
 import { customContext } from "../types.ts";
+import supabase from "../supabaseClient.ts";
 
 const EDGE_FUNCTION_URL =
   "https://gomhtyyltrqyoflqrgvy.functions.supabase.co/question_generate";
@@ -20,10 +21,23 @@ export const file_upload_handler = async (ctx: customContext) => {
 };
 
 export const upload_new_deck = async (message: string, ctx: customContext) => {
-  const deckName = message.slice(9, message.length);
+  const deckName = message.slice(9, message.length).toLowerCase();
   const userId = ctx.msg!.chat.id;
 
-  await ctx.reply(`Recieved deck name: ${deckName}`);
+  const { data: deckData } = await supabase.from("verified_decks").select(
+    "*",
+  );
+  const isExisitingDeck = deckData!.some((deck) =>
+    deck.deck.toString().trim() == deckName.trim()
+  );
+
+  await ctx.reply(`Adding the questions under the deck name: ${deckName}`);
+
+  if (isExisitingDeck) {
+    await ctx.reply(
+      "Caution! A deck with the same name already exists and you will be appending questions to the same!",
+    );
+  }
 
   fetch(EDGE_FUNCTION_URL, {
     method: "POST",

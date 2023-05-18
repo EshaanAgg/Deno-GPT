@@ -45,7 +45,9 @@ export const handle_deck_verification = async (
   ctx: customContext,
   deck: string,
 ) => {
-  const { data } = await supabase.from("chatgpt_generated").select("*").eq(
+  const { data } = await supabase.from("random_unverified_questions").select(
+    "*",
+  ).eq(
     "deckName",
     deck,
   );
@@ -79,11 +81,64 @@ export const handle_deck_verification = async (
 
   const keyboard = new InlineKeyboard();
   keyboard.text(
-    `YES! Verify them all.`,
+    `✅ YES! Verify them all.`,
     `/approve-${deck}`,
   );
   keyboard.row();
-  keyboard.text(`NOPE! Discard them all.`, `/discard-${deck}`);
+  keyboard.text(`🔴 NOPE! Discard them all.`, `/discard-${deck}`);
+  keyboard.row();
+  keyboard.text(`➕ Show me more questions!.`, `/more-${deck}`);
+
+  await ctx.api.sendMessage(
+    ctx.msg?.chat?.id!,
+    "Choose one of these options!",
+    {
+      reply_markup: keyboard,
+    },
+  );
+};
+
+export const more_from_deck = async (
+  ctx: customContext,
+  deck: string,
+) => {
+  const { data } = await supabase.from("random_unverified_questions").select(
+    "*",
+  ).eq(
+    "deckName",
+    deck,
+  );
+
+  const questionCount = Math.min(10, data!.length);
+
+  for (let i = 0; i < questionCount; i++) {
+    await ctx.api.sendPoll(
+      ctx.msg!.chat.id,
+      data![i].question,
+      [
+        data![i].A.toString(),
+        data![i].B.toString(),
+        data![i].C.toString(),
+        data![i].D.toString(),
+      ],
+      {
+        is_anonymous: false,
+        type: "quiz",
+        correct_option_id: data![i].ans,
+        explanation: "Insert explanation here.",
+      },
+    );
+  }
+
+  const keyboard = new InlineKeyboard();
+  keyboard.text(
+    `✅ YES! Verify them all.`,
+    `/approve-${deck}`,
+  );
+  keyboard.row();
+  keyboard.text(`🔴 NOPE! Discard them all.`, `/discard-${deck}`);
+  keyboard.row();
+  keyboard.text(`➕ Show me more questions!.`, `/more-${deck}`);
 
   await ctx.api.sendMessage(
     ctx.msg?.chat?.id!,

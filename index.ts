@@ -15,6 +15,7 @@ import {
   approve_deck,
   discard_deck,
   handle_deck_verification,
+  more_from_deck,
   verify_decks,
 } from "./controllers/verify_decks.ts";
 import { send_help, set_settings } from "./controllers/utilities.ts";
@@ -61,6 +62,8 @@ bot.on("callback_query:data", async (ctx: customContext) => {
     await approve_deck(ctx, data.slice(8));
   } else if (data.slice(0, 8) == "discard-") {
     await discard_deck(ctx, data.slice(8));
+  } else if (data.slice(0, 5) == "more-") {
+    await more_from_deck(ctx, data.slice(5));
   } else {
     const { data: deckData } = await supabase.from("verified_decks").select(
       "*",
