@@ -49,7 +49,6 @@ export const allDecks = [
   "revolts",
   "newspapers",
   "fundamental_rights",
-  "assorted",
 ];
 export const allDecksString = allDecks.map((deck) => toTitleCase(deck));
 

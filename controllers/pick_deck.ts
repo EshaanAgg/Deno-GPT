@@ -1,6 +1,6 @@
 import supabase from "../supabaseClient.ts";
 import { BOT_NAME, texts } from "../constants.ts";
-import { counter, mostCommon, toTitleCase } from "../helper.ts";
+import { toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 import { InlineKeyboard } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
 
@@ -22,37 +22,56 @@ export const pick_deck = async (id: number, ctx: customContext) => {
     welcome_msg = await ctx.api.sendMessage(id, texts["welcome_back"]);
   }
 
-  const choices = ["✅", "🔄", "🆕"];
-  const { data } = await supabase
-    .from("PollStats")
-    .select("deck")
+  const { data: userPerformance } = await supabase
+    .from("user_stats")
+    .select("*")
     .eq("user", id);
-
-  // deno-lint-ignore no-explicit-any
-  const deckslist = data?.map((d: any) => d.deck) || [];
-  const deckstats = counter(deckslist);
-  const mostCommonDecks = mostCommon(deckstats, 2);
-  // deno-lint-ignore prefer-const
-  let deckcolor: { [key: string]: string } = {};
 
   const { data: deckData } = await supabase.from("verified_decks").select("*");
   const allDecks = deckData!.map((deck) => deck.deck);
 
+  const deckStats: {
+    deck: string;
+    accuracy: string;
+    lastSolved: string;
+  }[] = [];
+
   allDecks.forEach((deck) => {
-    if (deckstats.deck !== undefined) deckcolor[deck] = choices[2];
-    else if (mostCommonDecks.includes(deck)) deckcolor[deck] = choices[0];
-    else deckcolor[deck] = choices[1];
+    let isAdded = false;
+    for (let i = 0; i < userPerformance!.length; i++) {
+      const row = userPerformance![i];
+      if (row.deck == deck) {
+        const last = new Date(row.updated_at);
+        const now = new Date();
+        const daysPassed = Math.ceil(
+          (now.getTime() - last.getTime()) / (1000 * 24 * 3600),
+        );
+        deckStats.push({
+          deck,
+          accuracy: row.accuracy.toString(),
+          lastSolved: daysPassed.toString(),
+        });
+        isAdded = true;
+        break;
+      }
+    }
+    if (!isAdded) {
+      deckStats.push({
+        deck,
+        accuracy: "NA",
+        lastSolved: "NA",
+      });
+    }
   });
 
   const keyboard = new InlineKeyboard();
-  let index = 0;
-  allDecks.forEach((deck) => {
+  deckStats.forEach((deck) => {
     keyboard.text(
-      `${deckcolor[deck]} ${toTitleCase(deck.replace("_", " "))}`,
-      `/${deck}`,
+      `${toTitleCase(deck.deck.replace("_", " "))}
+      ${deck.accuracy}% | Last Solved: ${deck.lastSolved} Days ago`,
+      `/${deck.deck}`,
     );
-    if (index % 2 == 1) keyboard.row();
-    index++;
+    keyboard.row();
   });
 
   const msg = await ctx.api.sendMessage(id, "Choose a deck to revise!", {

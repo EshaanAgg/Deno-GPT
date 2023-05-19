@@ -21,14 +21,14 @@ export const file_upload_handler = async (ctx: customContext) => {
 };
 
 export const upload_new_deck = async (message: string, ctx: customContext) => {
-  const deckName = message.slice(9, message.length).toLowerCase();
+  const deckName = message.slice(9, message.length).toString().trim();
   const userId = ctx.msg!.chat.id;
 
   const { data: deckData } = await supabase.from("verified_decks").select(
     "*",
   );
   const isExisitingDeck = deckData!.some((deck) =>
-    deck.deck.toString().trim() == deckName.trim()
+    deck.deck.toString().trim() == deckName
   );
 
   await ctx.reply(`Adding the questions under the deck name: ${deckName}`);

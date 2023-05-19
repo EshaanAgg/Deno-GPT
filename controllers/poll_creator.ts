@@ -33,9 +33,10 @@ export const pollCreator = async (id: number, ctx: customContext) => {
 
     const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
 
-    const accuracy = (ctx.session.solvedCorrectly / session.length) * 100;
+    let accuracy = (ctx.session.solvedCorrectly / session.length) * 100;
+    if (isNaN(accuracy)) accuracy = 0;
 
-    await ctx.reply(`You had ${accuracy} in this deck!`);
+    await ctx.api.sendMessage(id, `You had ${accuracy} in this deck!`);
 
     const { data, error } = await supabase.from("user_stats").select("*").eq(
       "user",
