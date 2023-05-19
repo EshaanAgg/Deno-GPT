@@ -46,6 +46,7 @@ bot.use(
         questionPreference: 5,
         pollInfo: [],
         uploadedFileLink: null,
+        solvedCorrectly: 0,
       };
       return obj;
     },

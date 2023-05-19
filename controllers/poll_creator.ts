@@ -33,6 +33,27 @@ export const pollCreator = async (id: number, ctx: customContext) => {
 
     const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
 
+    const accuracy = (ctx.session.solvedCorrectly / session.length) * 100;
+    const { data } = await supabase.from("user_stats").select("*").eq(
+      "user",
+      id,
+    ).eq("deck", deck);
+
+    if (!data || data.length == 0) {
+      await supabase.from("user_statas").insert({
+        user: id,
+        deck,
+        accuracy,
+      });
+    } else {
+      const currentDateTime = new Date();
+      await supabase
+        .from("user_stats")
+        .update({ accuracy, updated_at: currentDateTime.toISOString() })
+        .eq("user", id)
+        .eq("deck", deck);
+    }
+
     try {
       const _ = await supabase.from("TempMsgs").insert({
         user: id,

@@ -87,7 +87,7 @@ export const handle_deck_verification = async (
   keyboard.row();
   keyboard.text(`🔴 NOPE! Discard them all.`, `/discard-${deck}`);
   keyboard.row();
-  keyboard.text(`➕ Show me more questions!.`, `/more-${deck}`);
+  keyboard.text(`➕ Show me more questions!`, `/more-${deck}`);
 
   await ctx.api.sendMessage(
     ctx.msg?.chat?.id!,
@@ -138,7 +138,7 @@ export const more_from_deck = async (
   keyboard.row();
   keyboard.text(`🔴 NOPE! Discard them all.`, `/discard-${deck}`);
   keyboard.row();
-  keyboard.text(`➕ Show me more questions!.`, `/more-${deck}`);
+  keyboard.text(`➕ Show me more questions!`, `/more-${deck}`);
 
   await ctx.api.sendMessage(
     ctx.msg?.chat?.id!,

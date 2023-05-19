@@ -16,6 +16,9 @@ export const update_question_status = async (
         .eq("user", userId.toString())
         .eq("question", pollInfo[i].questionId);
 
+      ctx.session.solvedCorrectly +=
+        chosen_option == pollInfo[i].correctAnsIndex ? 1 : 0;
+
       // Delete the entry from the pollInfo object to save memory
       pollInfo.splice(i, 1);
       ctx.session.pollInfo = pollInfo;

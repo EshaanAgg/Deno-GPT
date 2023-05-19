@@ -17,6 +17,7 @@ export const new_deck = async (id: number, ctx: customContext, deck = "") => {
   session = await default_handler(deck, ctx.session.questionPreference, id);
 
   ctx.session.chatDescription = [0, deck, session, 0, 0, "0"];
+  ctx.session.solvedCorrectly = 0;
 
   ctx.reply(
     `${session.length} questions would be displayed now on the basis of your question preference. `,
