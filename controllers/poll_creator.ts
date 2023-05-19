@@ -43,7 +43,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     ).eq("deck", deck);
     console.log(data, error);
     if (!data || data.length == 0) {
-      const { data, error } = await supabase.from("user_statas").insert({
+      const { data, error } = await supabase.from("user_stats").insert({
         user: id,
         deck,
         accuracy,
