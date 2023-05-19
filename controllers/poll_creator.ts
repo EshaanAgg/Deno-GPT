@@ -34,24 +34,29 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
 
     const accuracy = (ctx.session.solvedCorrectly / session.length) * 100;
-    const { data } = await supabase.from("user_stats").select("*").eq(
+
+    await ctx.reply(`You had ${accuracy} in this deck!`);
+
+    const { data, error } = await supabase.from("user_stats").select("*").eq(
       "user",
       id,
     ).eq("deck", deck);
-
+    console.log(data, error);
     if (!data || data.length == 0) {
-      await supabase.from("user_statas").insert({
+      const { data, error } = await supabase.from("user_statas").insert({
         user: id,
         deck,
         accuracy,
       });
+      console.log(data, error);
     } else {
       const currentDateTime = new Date();
-      await supabase
+      const { data, error } = await supabase
         .from("user_stats")
         .update({ accuracy, updated_at: currentDateTime.toISOString() })
         .eq("user", id)
         .eq("deck", deck);
+      console.log(data, error);
     }
 
     try {
