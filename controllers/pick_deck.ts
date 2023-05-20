@@ -17,7 +17,6 @@ export const pick_deck = async (id: number, ctx: customContext) => {
       lname: ctx.from?.last_name || "",
       uname: ctx.from?.username || "",
     });
-    // console.log(response);
     welcome_msg = await ctx.api.sendMessage(id, texts["welcome"]);
   } else {
     welcome_msg = await ctx.api.sendMessage(id, texts["welcome_back"]);

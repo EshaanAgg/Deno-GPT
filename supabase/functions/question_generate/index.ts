@@ -72,7 +72,6 @@ const makeChatGPTAPIRequest = async (
   const gpt_json = await gpt_response.json();
 
   if (gpt_json.error) {
-    console.log(`${i} gpt_json_error`);
     sendMessage(
       `Error: The content creation of Request Number ${
         i + 1
@@ -89,7 +88,6 @@ const makeChatGPTAPIRequest = async (
   try {
     question_json = JSON.parse(question_content);
   } catch (_err) {
-    console.log(`${i} question_json_error`);
     sendMessage(
       `Error: The parsing of JSON from the ChatGPT response failed for Request ${
         i + 1
@@ -114,7 +112,6 @@ const makeChatGPTAPIRequest = async (
 
   await supabase.from("chatgpt_generated").insert(questions).select();
 
-  console.log(`${i} success`);
   sendMessage(
     `${questions.length} questions were generated as a part of Request ${
       i + 1
@@ -197,7 +194,6 @@ serve(async (req) => {
   let successful_request_count = 0, failed_requests_count = 0;
 
   const apiCallResults = await Promise.all(allRequests);
-  console.log(apiCallResults);
   apiCallResults.forEach((req) => {
     if (req > 0) successful_request_count++;
     else failed_requests_count++;

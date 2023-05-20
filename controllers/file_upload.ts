@@ -13,7 +13,6 @@ export const file_upload_handler = async (ctx: customContext) => {
   }/${file.file_path}`;
 
   ctx.session.uploadedFileLink = download_file_url;
-  console.log(download_file_url);
 
   await ctx.reply(
     `The file upload was successful! Please choose a name for the deck. Set a text of the form "DeckName:<Your Alphanumeric Deck Name in Titlecase>" to continue with the request.`,
