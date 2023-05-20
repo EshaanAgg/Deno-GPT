@@ -74,3 +74,56 @@ Please note that all the commands are case sensitive.`;
     console.log(err);
   }
 };
+
+export type DeckStatType = {
+  deck: string;
+  accuracy: number;
+  lastSolved: number;
+};
+
+export const get_decks_with_stats = async (id: string) => {
+  const { data: userPerformance } = await supabase
+    .from("user_stats")
+    .select("*")
+    .eq("user", id);
+
+  const { data: deckData } = await supabase.from("verified_decks").select("*");
+  const allDecks = deckData!.map((deck) => deck.deck);
+
+  const deckStats: DeckStatType[] = [];
+
+  allDecks.forEach((deck) => {
+    let isAdded = false;
+    for (let i = 0; i < userPerformance!.length; i++) {
+      const row = userPerformance![i];
+      if (row.deck == deck) {
+        const last = new Date(row.updated_at);
+        const now = new Date();
+        const daysPassed = Math.ceil(
+          (now.getTime() - last.getTime()) / (1000 * 24 * 3600),
+        );
+        deckStats.push({
+          deck,
+          accuracy: row.accuracy,
+          lastSolved: daysPassed,
+        });
+        isAdded = true;
+        break;
+      }
+    }
+    if (!isAdded) {
+      deckStats.push({
+        deck,
+        accuracy: 0,
+        lastSolved: 10000,
+      });
+    }
+  });
+
+  deckStats.sort((a, b) =>
+    (b.accuracy / 2 + 10 * b.lastSolved) -
+    (a.accuracy / 2 + 10 * a.lastSolved)
+  );
+
+  return deckStats;
+};

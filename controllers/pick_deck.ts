@@ -3,6 +3,7 @@ import { BOT_NAME, texts } from "../constants.ts";
 import { toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 import { InlineKeyboard } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
+import { DeckStatType, get_decks_with_stats } from "./utilities.ts";
 
 export const pick_deck = async (id: number, ctx: customContext) => {
   let welcome_msg;
@@ -22,53 +23,18 @@ export const pick_deck = async (id: number, ctx: customContext) => {
     welcome_msg = await ctx.api.sendMessage(id, texts["welcome_back"]);
   }
 
-  const { data: userPerformance } = await supabase
-    .from("user_stats")
-    .select("*")
-    .eq("user", id);
-
-  const { data: deckData } = await supabase.from("verified_decks").select("*");
-  const allDecks = deckData!.map((deck) => deck.deck);
-
-  const deckStats: {
-    deck: string;
-    accuracy: string;
-    lastSolved: string;
-  }[] = [];
-
-  allDecks.forEach((deck) => {
-    let isAdded = false;
-    for (let i = 0; i < userPerformance!.length; i++) {
-      const row = userPerformance![i];
-      if (row.deck == deck) {
-        const last = new Date(row.updated_at);
-        const now = new Date();
-        const daysPassed = Math.ceil(
-          (now.getTime() - last.getTime()) / (1000 * 24 * 3600),
-        );
-        deckStats.push({
-          deck,
-          accuracy: row.accuracy.toString(),
-          lastSolved: daysPassed.toString(),
-        });
-        isAdded = true;
-        break;
-      }
-    }
-    if (!isAdded) {
-      deckStats.push({
-        deck,
-        accuracy: "NA",
-        lastSolved: "NA",
-      });
-    }
-  });
+  const frequencyEmojis = ["🔁", "🆕", "✅"];
+  const deckStats = await get_decks_with_stats(id);
 
   const keyboard = new InlineKeyboard();
-  deckStats.forEach((deck) => {
+  deckStats.forEach((deck: DeckStatType) => {
+    let leadingEmoji = "";
+    if (deck.lastSolved <= 3) leadingEmoji = frequencyEmojis[2];
+    else if (deck.lastSolved <= 7) leadingEmoji = frequencyEmojis[0];
+    else leadingEmoji = frequencyEmojis[1];
+
     keyboard.text(
-      `${toTitleCase(deck.deck.replace("_", " "))}
-      ${deck.accuracy}% | Last Solved: ${deck.lastSolved} Days ago`,
+      `${leadingEmoji} ${toTitleCase(deck.deck.replace("_", " "))}`,
       `/${deck.deck}`,
     );
     keyboard.row();

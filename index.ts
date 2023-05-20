@@ -26,6 +26,7 @@ import {
   upload_new_deck,
 } from "./controllers/file_upload.ts";
 import { update_question_status } from "./helpers/poll_supabase.ts";
+import { send_report } from "./controllers/send_report.ts";
 
 const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
 
@@ -107,6 +108,11 @@ bot.command("settings", async (ctx: customContext) => {
 bot.command(
   "help",
   async (ctx: customContext) => await send_help(ctx.msg?.chat?.id || 0, ctx),
+);
+
+bot.command(
+  "report",
+  async (ctx: customContext) => await send_report(ctx.msg?.chat?.id || 0, ctx),
 );
 
 bot.command(
