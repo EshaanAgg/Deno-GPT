@@ -19,11 +19,11 @@ export const send_report = async (userId: string, ctx: customContext) => {
 
   deckStats.forEach((deck: DeckStatType) =>
     message += `<u>${toTitleCase(deck.deck.replace("_", " "))} :</u>
-<tg-spoiler>Accuracy: <b>${convertNumberToEmoji(deck.accuracy)} %</b>
-Last Practiced: <b>${
+<tg-spoiler>Accuracy: ${convertNumberToEmoji(deck.accuracy)} %
+Last Practiced: ${
       deck.lastSolved == 10000 ? "NA" : (convertNumberToEmoji(deck.lastSolved) +
         " days ago")
-    }</b>
+    }
 </tg-spoiler>
 `
   );
