@@ -18,17 +18,16 @@ export const send_report = async (userId: string, ctx: customContext) => {
     "You have been <b>amazing</b> on the app! Here is a brief deck-wise summary of your preparation:\n\n";
 
   deckStats.forEach((deck: DeckStatType) =>
-    message += `<u>${toTitleCase(deck.deck.replace("_", " "))} :</u>
-<tg-spoiler>Accuracy: ${convertNumberToEmoji(deck.accuracy)} %
+    message += `🗂️${toTitleCase(deck.deck.replace("_", " "))}🗂️
+Accuracy: ${convertNumberToEmoji(deck.accuracy)} %
 Last Practiced: ${
-      deck.lastSolved == 10000 ? "NA" : (convertNumberToEmoji(deck.lastSolved) +
-        " days ago")
+      deck.lastSolved == 10000
+        ? "Haven't started yet!"
+        : (convertNumberToEmoji(deck.lastSolved) +
+          " days ago")
     }
-</tg-spoiler>
 `
   );
 
-  await ctx.api.sendMessage(userId, message, {
-    parse_mode: "HTML",
-  });
+  await ctx.api.sendMessage(userId, message);
 };
