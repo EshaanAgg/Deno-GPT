@@ -7,6 +7,7 @@ const convertNumberToEmoji = (n: number) => {
   let r = "";
   const emojis = "0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣";
   for (let i = 0; i < s.length; i++) r += emojis[parseInt(s[i])];
+  console.log(s, r);
   return r;
 };
 
@@ -15,10 +16,11 @@ export const send_report = async (userId: string, ctx: customContext) => {
   const deckStats = randomShuffle(decks);
 
   let message =
-    "You have been <b>amazing</b> on the app! Here is a brief deck-wise summary of your preparation:\n\n";
+    "You have been 🎉amazing🎉 on the app! Here is a brief deck-wise summary of your preparation:\n\n";
 
   deckStats.forEach((deck: DeckStatType) =>
-    message += `🗂️${toTitleCase(deck.deck.replace("_", " "))}🗂️
+    message += `🗂️${toTitleCase(deck.deck.replace("_", " "))}
+
 Accuracy: ${convertNumberToEmoji(deck.accuracy)} %
 Last Practiced: ${
       deck.lastSolved == 10000
@@ -26,8 +28,9 @@ Last Practiced: ${
         : (convertNumberToEmoji(deck.lastSolved) +
           " days ago")
     }
+
 `
   );
-
+  console.log(message);
   await ctx.api.sendMessage(userId, message);
 };
