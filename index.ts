@@ -27,8 +27,11 @@ import {
 } from "./controllers/file_upload.ts";
 import { update_question_status } from "./helpers/poll_supabase.ts";
 import { send_report } from "./controllers/send_report.ts";
+import { emojiParser } from "https://deno.land/x/grammy_emoji@v1.1.2/mod.ts";
 
-const bot = new Bot<customContext>(Deno.env.get("TELEGRAM_BOT_TOKEN") || "");
+const bot = new Bot<customContext>(
+  Deno.env.get("TELEGRAM_BOT_TOKEN") || "",
+);
 
 function getSessionKey(ctx: Context): string | undefined {
   return (
@@ -38,6 +41,7 @@ function getSessionKey(ctx: Context): string | undefined {
   );
 }
 
+bot.use(emojiParser());
 bot.use(
   session({
     getSessionKey,

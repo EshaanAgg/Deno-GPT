@@ -2,6 +2,7 @@ import {
   Context,
   SessionFlavor,
 } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
+import { EmojiFlavor } from "https://deno.land/x/grammy_emoji@v1.1.2/mod.ts";
 
 export type PollInfoType = {
   pollId: string;
@@ -23,4 +24,4 @@ interface SessionData {
   uploadedFileLink: string | null;
   solvedCorrectly: number;
 }
-export type customContext = Context & SessionFlavor<SessionData>;
+export type customContext = EmojiFlavor<Context & SessionFlavor<SessionData>>;
