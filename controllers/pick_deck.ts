@@ -22,13 +22,15 @@ export const pick_deck = async (id: number, ctx: customContext) => {
     welcome_msg = await ctx.api.sendMessage(id, texts["welcome_back"]);
   }
 
-  const frequencyEmojis = ["🔁", "🆕", "✅"];
+  const frequencyEmojis = ["🔁", "🆕", "✅", ctx.emoji`${"cross_mark"}`];
   const deckStats = await get_decks_with_stats(id);
 
   const keyboard = new InlineKeyboard();
+  let index = 0;
   deckStats.forEach((deck: DeckStatType) => {
     let leadingEmoji = "";
-    if (deck.lastSolved <= 3) leadingEmoji = frequencyEmojis[2];
+    if (deck.accuracy <= 60) leadingEmoji = frequencyEmojis[3];
+    else if (deck.lastSolved <= 3) leadingEmoji = frequencyEmojis[2];
     else if (deck.lastSolved <= 7) leadingEmoji = frequencyEmojis[0];
     else leadingEmoji = frequencyEmojis[1];
 
@@ -36,7 +38,8 @@ export const pick_deck = async (id: number, ctx: customContext) => {
       `${leadingEmoji} ${toTitleCase(deck.deck.replace("_", " "))}`,
       `/${deck.deck}`,
     );
-    keyboard.row();
+    if (index % 2 == 1) keyboard.row();
+    index++;
   });
 
   const msg = await ctx.api.sendMessage(id, "Choose a deck to revise!", {

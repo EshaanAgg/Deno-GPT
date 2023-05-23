@@ -31,15 +31,15 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       randomChoice(STICKERS),
     );
 
-    const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
-
     let accuracy = (ctx.session.solvedCorrectly / session.length) * 100;
     if (isNaN(accuracy)) accuracy = 0;
 
     await ctx.api.sendMessage(
       id,
-      `You had ${accuracy}% accuracy in this attmept!`,
+      `You had ${accuracy}% accuracy in this attempt!`,
     );
+
+    const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
 
     const { data } = await supabase.from("user_stats").select("*").eq(
       "user",
