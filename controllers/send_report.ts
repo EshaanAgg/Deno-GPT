@@ -1,6 +1,6 @@
 import { customContext } from "../types.ts";
 import { DeckStatType, get_decks_with_stats } from "./utilities.ts";
-// import { randomShuffle, toTitleCase } from "../helper.ts";
+import { toTitleCase } from "../helper.ts";
 
 // Search for emojis from here `https://github.com/grammyjs/emoji/blob/main/src/emojidata.ts`
 // const convertNumberToEmoji = (ctx: customContext, n: number) => {
@@ -45,7 +45,11 @@ import { DeckStatType, get_decks_with_stats } from "./utilities.ts";
 //   await ctx.api.sendMessage(userId, message);
 // };
 
-export const send_report = async (userId: string, _ctx: customContext) => {
+export const send_report = async (userId: string, ctx: customContext) => {
+  await ctx.reply(
+    "Thanks for using this option! Crunching those numbers for you now....",
+  );
+
   const decks = await get_decks_with_stats(userId);
   const payload: {
     deck: string;
@@ -54,7 +58,7 @@ export const send_report = async (userId: string, _ctx: customContext) => {
 
   decks.forEach((deck: DeckStatType) =>
     payload.push({
-      deck: deck.deck,
+      deck: toTitleCase(deck.deck.replace("_", "\n")),
       accuracy: deck.accuracy,
     })
   );
