@@ -45,11 +45,17 @@ export const handle_deck_verification = async (
   ctx: customContext,
   deck: string,
 ) => {
-  const { data } = await supabase.from("random_unverified_questions").select(
+  let { data } = await supabase.from("random_unverified_questions").select(
     "*",
   ).eq(
     "deckName",
     deck,
+  );
+
+  data = data!.filter((que) =>
+    que.A.toString().length < 100 && que.B.toString().length < 100 &&
+    que.C.toString().length < 100 &&
+    que.D.toString().length < 100
   );
 
   const questionCount = Math.min(10, data!.length);
@@ -102,11 +108,17 @@ export const more_from_deck = async (
   ctx: customContext,
   deck: string,
 ) => {
-  const { data } = await supabase.from("random_unverified_questions").select(
+  let { data } = await supabase.from("random_unverified_questions").select(
     "*",
   ).eq(
     "deckName",
     deck,
+  );
+
+  data = data!.filter((que) =>
+    que.A.toString().length < 100 && que.B.toString().length < 100 &&
+    que.C.toString().length < 100 &&
+    que.D.toString().length < 100
   );
 
   const questionCount = Math.min(10, data!.length);
@@ -153,9 +165,15 @@ export const approve_deck = async (
   ctx: customContext,
   deck: string,
 ) => {
-  const { data } = await supabase.from("chatgpt_generated").select("*").eq(
+  let { data } = await supabase.from("chatgpt_generated").select("*").eq(
     "deckName",
     deck,
+  );
+
+  data = data!.filter((que) =>
+    que.A.toString().length < 100 && que.B.toString().length < 100 &&
+    que.C.toString().length < 100 &&
+    que.D.toString().length < 100
   );
 
   const questions = data!.map((que) => ({
