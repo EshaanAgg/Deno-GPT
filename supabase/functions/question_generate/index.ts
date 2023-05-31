@@ -173,10 +173,13 @@ serve(async (req) => {
   );
 
   // Split the content into multiple chunks of 3000 characters
-  const content_chunks = [];
+  let content_chunks = [];
   for (let i = 0, charsLength = content.length; i < charsLength; i += 3000) {
     content_chunks.push(content.substring(i, i + 3000));
   }
+
+  // Filter content chunks so that only prompts with enough context are used.
+  content_chunks = content_chunks.filter((chunk) => chunk.length > 300);
 
   sendMessage(
     `The pdf has been split into ${content_chunks.length} sub pages! Making calls for each of them now.`,
