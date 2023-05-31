@@ -168,7 +168,7 @@ export const approve_deck = async (
     deck,
     confirmed: true,
   }));
-
+  console.log(deck);
   await supabase.from("chatgpt").insert(questions);
   await supabase.from("chatgpt_generated").delete().eq(
     "deckName",
@@ -182,6 +182,8 @@ export const discard_deck = async (
   ctx: customContext,
   deck: string,
 ) => {
+  console.log(deck);
+
   await supabase.from("chatgpt_generated").delete().eq(
     "deckName",
     deck,
