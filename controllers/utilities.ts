@@ -58,21 +58,7 @@ setQuestion:INC (Will show all questions which you had attempted incorrectly pre
 setQuestion:XY  (Will show XY questions for each deck. Note that XY must always be a two digit number like 05, 10, 99 etc)\n\n
 Please note that all the commands are case sensitive.`;
 
-  const msg = await ctx.api.sendMessage(id, message);
-  try {
-    supabase.from("TempMsgs").insert({
-      user: ctx.msg?.chat?.id || "0",
-      mid: msg?.message_id,
-      botName: BOT_NAME,
-    });
-    await supabase.from("TempMsgs").insert({
-      user: ctx.msg?.chat?.id,
-      mid: ctx.msg?.message_id,
-      botName: BOT_NAME,
-    });
-  } catch (err) {
-    console.log(err);
-  }
+  await ctx.api.sendMessage(id, message);
 };
 
 export type DeckStatType = {

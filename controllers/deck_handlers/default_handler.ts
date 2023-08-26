@@ -12,6 +12,7 @@ interface QuestionInterface {
   confirmed: boolean;
 }
 
+// Return the object that is to be stored in the session
 const get_session_entry = (q: QuestionInterface) => {
   const options = [q.A, q.B, q.C, q.D];
   const option_ids = options.map((_, index) => `${q.id}-${index}`);
@@ -25,6 +26,7 @@ const get_session_entry = (q: QuestionInterface) => {
   ];
 };
 
+// Validate question according to Telegram specs
 const is_valid_question = (q: QuestionInterface): boolean => {
   return (
     q.question.length < 100 &&
@@ -35,6 +37,7 @@ const is_valid_question = (q: QuestionInterface): boolean => {
   );
 };
 
+// Utility to transform question options
 const transform_question_options = (
   q: QuestionInterface,
 ): QuestionInterface => {
@@ -45,6 +48,7 @@ const transform_question_options = (
   return q;
 };
 
+// Handle the deck according in Normal mode
 const regularHandler = async (
   deck: string,
   question_preference: number,
@@ -81,6 +85,7 @@ const regularHandler = async (
   return questions;
 };
 
+// Handle the deck according in incorrect mode
 const incorrectHandler = async (
   deck: string,
   userId: number,
@@ -121,6 +126,7 @@ const incorrectHandler = async (
   return questions;
 };
 
+// Map which handler to use
 export const default_handler = async (
   deck: string,
   question_preference: number,

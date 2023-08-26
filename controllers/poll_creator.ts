@@ -1,6 +1,6 @@
 import { get_progress } from "./utilities.ts";
 import { randomChoice, toTitleCase } from "../helper.ts";
-import { BOT_NAME, STICKERS, texts } from "../constants.ts";
+import { STICKERS, texts } from "../constants.ts";
 import supabase from "../supabaseClient.ts";
 import { customContext } from "../types.ts";
 
@@ -16,17 +16,10 @@ export const pollCreator = async (id: number, ctx: customContext) => {
         ": " +
         get_progress(i, session.length),
     );
-    if (i > 1) {
-      try {
-        await ctx.api.deleteMessage(id, pbar_mid);
-      } catch (err) {
-        console.log(err);
-      }
-    }
   }
 
   if (i == session.length) {
-    const congrats_message = await ctx.api.sendSticker(
+    await ctx.api.sendSticker(
       id,
       randomChoice(STICKERS),
     );
@@ -39,7 +32,7 @@ export const pollCreator = async (id: number, ctx: customContext) => {
       `You had ${accuracy}% accuracy in this attempt!`,
     );
 
-    const complete_message = await ctx.api.sendMessage(id, texts["complete"]);
+    await ctx.api.sendMessage(id, texts["complete"]);
 
     const { data } = await supabase.from("user_stats").select("*").eq(
       "user",
@@ -61,25 +54,6 @@ export const pollCreator = async (id: number, ctx: customContext) => {
         .eq("deck", deck);
     }
 
-    try {
-      const _ = await supabase.from("TempMsgs").insert({
-        user: id,
-        mid: complete_message?.message_id || 0,
-        botName: BOT_NAME,
-      });
-      const __ = await supabase.from("TempMsgs").insert({
-        user: id,
-        mid: pbar_msg?.message_id || 0,
-        botName: BOT_NAME,
-      });
-      const ___ = await supabase.from("TempMsgs").insert({
-        user: id,
-        mid: congrats_message?.message_id || 0,
-        botName: BOT_NAME,
-      });
-    } catch (err) {
-      console.log(err);
-    }
     return;
   }
 
@@ -132,19 +106,5 @@ export const pollCreator = async (id: number, ctx: customContext) => {
     return_msg!.poll.id,
   ];
 
-  try {
-    await supabase.from("TempMsgs").insert({
-      user: id,
-      mid: return_msg?.message_id,
-      botName: BOT_NAME,
-    });
-    await supabase.from("TempMsgs").insert({
-      user: id,
-      mid: pbar_mid,
-      botName: BOT_NAME,
-    });
-  } catch (err) {
-    console.log(err);
-  }
   return [String(return_msg?.message_id), String(pbar_mid)];
 };

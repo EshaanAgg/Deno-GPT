@@ -1,12 +1,11 @@
 import supabase from "../supabaseClient.ts";
-import { BOT_NAME, texts } from "../constants.ts";
+import { texts } from "../constants.ts";
 import { toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 import { InlineKeyboard } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
 import { DeckStatType, get_decks_with_stats } from "./utilities.ts";
 
 export const pick_deck = async (id: number, ctx: customContext) => {
-  let welcome_msg;
   const res = await supabase.from("BotUsers").select("*").eq("t_id", id);
 
   if (res.data === null || res.data.length == 0) {
@@ -17,13 +16,13 @@ export const pick_deck = async (id: number, ctx: customContext) => {
       lname: ctx.from?.last_name || "",
       uname: ctx.from?.username || "",
     });
-    welcome_msg = await ctx.api.sendMessage(id, texts["welcome"]);
+    await ctx.api.sendMessage(id, texts["welcome"]);
   } else {
-    welcome_msg = await ctx.api.sendMessage(id, texts["welcome_back"]);
+    await ctx.api.sendMessage(id, texts["welcome_back"]);
   }
 
   const frequencyEmojis = ["🔁", "🆕", "✅", ctx.emoji`${"cross_mark"}`];
-  const deckStats = await get_decks_with_stats(id);
+  const deckStats = await get_decks_with_stats(id.toString());
 
   const keyboard = new InlineKeyboard();
   let index = 0;
@@ -42,26 +41,7 @@ export const pick_deck = async (id: number, ctx: customContext) => {
     index++;
   });
 
-  const msg = await ctx.api.sendMessage(id, "Choose a deck to revise!", {
+  await ctx.api.sendMessage(id, "Choose a deck to revise!", {
     reply_markup: keyboard,
   });
-  try {
-    await supabase.from("TempMsgs").insert({
-      user: id,
-      mid: msg.message_id || 0,
-      botName: BOT_NAME,
-    });
-    await supabase.from("TempMsgs").insert({
-      user: id,
-      mid: ctx.msg?.message_id || 0,
-      botName: BOT_NAME,
-    });
-    await supabase.from("TempMsgs").insert({
-      user: id,
-      mid: welcome_msg?.message_id || 0,
-      botName: BOT_NAME,
-    });
-  } catch (err) {
-    console.log(err);
-  }
 };

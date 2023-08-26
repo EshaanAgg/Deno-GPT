@@ -3,6 +3,7 @@ import { toTitleCase } from "../helper.ts";
 import { customContext } from "../types.ts";
 import { InlineKeyboard } from "https://deno.land/x/grammy@v1.11.2/mod.ts";
 
+// Main handler to choose deck
 export const verify_decks = async (ctx: customContext) => {
   const { data: deckData } = await supabase.from("unverified_decks").select(
     "*",
@@ -41,6 +42,7 @@ export const verify_decks = async (ctx: customContext) => {
   );
 };
 
+// Provide the options for deck verification
 export const handle_deck_verification = async (
   ctx: customContext,
   deck: string,
