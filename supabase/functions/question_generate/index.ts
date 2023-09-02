@@ -126,12 +126,12 @@ serve(async (req) => {
   const { download_file_url, userId, deckName } = await req.json();
 
   // Initial authentication of the user
-  if (!ADMIN_USER_IDS!.includes(userId.toString())) {
-    return sendError(
-      "Hi! You aren't currently authorised to upload files to the bot. Contact the admins if you think this is a mistake!",
-      userId,
-    );
-  }
+  // if (!ADMIN_USER_IDS!.includes(userId.toString())) {
+  //   return sendError(
+  //     "Hi! You aren't currently authorised to upload files to the bot. Contact the admins if you think this is a mistake!",
+  //     userId,
+  //   );
+  // }
 
   // Check for supported file types
   if (download_file_url!.slice(-4) != ".pdf") {
