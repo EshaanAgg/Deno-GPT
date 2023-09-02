@@ -62,7 +62,6 @@ bot.on("callback_query:data", async (ctx: customContext) => {
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
   const message_id = ctx.callbackQuery?.message?.message_id || 0;
 
-  // Mapping the callback data
   if (data.slice(0, 7) == "verify-") {
     await handle_deck_verification(ctx, data.slice(7));
   } else if (data.slice(0, 8) == "approve-") {
@@ -75,11 +74,9 @@ bot.on("callback_query:data", async (ctx: customContext) => {
     const { data: deckData } = await supabase.from("verified_decks").select(
       "*",
     );
-
     const isValidDeck = deckData!.some((deck) =>
       deck.deck.toString().trim() == data.toString().trim()
     );
-
     if (isValidDeck) {
       await ctx.answerCallbackQuery({
         text: "Loading your session!",
