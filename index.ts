@@ -59,6 +59,7 @@ bot.use(
 );
 
 bot.on("callback_query:data", async (ctx: customContext) => {
+  console.log(`[CALLBACK_QUERY] callbackQuery.data = ${ctx.callbackQuery?.data} msg.chat.id = ${ctx.msg?.chat?.id}`)
   const data = ltrim(ctx.callbackQuery?.data || "", "/");
   const message_id = ctx.callbackQuery?.message?.message_id || 0;
 
@@ -125,6 +126,7 @@ bot.command(
 );
 
 bot.on("poll_answer", async (ctx: customContext) => {
+  console.log(`[POLL_ANSWER] poll_answer = ${ctx.update?.poll_answer} msg.chat.id = ${ctx.msg?.chat?.id}`)
   const poll_id = ctx.update?.poll_answer?.poll_id;
   const opts_id = ctx.update?.poll_answer?.option_ids;
   const id = ctx.update?.poll_answer?.user?.id || 0;
@@ -132,6 +134,7 @@ bot.on("poll_answer", async (ctx: customContext) => {
   const chosen_option = ctx.update?.poll_answer?.option_ids[0];
   await update_question_status(ctx, poll_id!, chosen_option!, id.toString());
 
+  console.log("[POLL_ANSWER] poll_id = ", poll_id, " opts_id = ", opts_id, " id = ", id, " ctx.session.chatDescription[5] = ", ctx.session.chatDescription[5])
   if (poll_id == ctx.session.chatDescription[5]) {
     await pollCreator(id, ctx);
   }
@@ -143,6 +146,7 @@ bot.on("poll_answer", async (ctx: customContext) => {
 });
 
 bot.on(":file", async (ctx: customContext) => {
+  console.log("[FILE] file = ", ctx.message?.document?.file_id, " msg.chat.id = ", ctx.msg?.chat?.id)
   await file_upload_handler(ctx);
 });
 
@@ -151,6 +155,7 @@ bot.command("random", async (ctx: customContext) => {
 });
 
 bot.command("verify", async (ctx: customContext) => {
+  console.log("[VERIFY] msg.chat.id = ", ctx.msg?.chat?.id, " ADMIN_USER_IDS = ", Deno.env.get("ADMIN_USER_IDS"))
   if (
     !(Deno.env.get("ADMIN_USER_IDS")!.includes(ctx.msg!.chat!.id!.toString()))
   ) {
@@ -161,6 +166,7 @@ bot.command("verify", async (ctx: customContext) => {
 });
 
 bot.on("message", async (ctx: customContext) => {
+  console.log("[MESSAGE] message = ", ctx.message?.text, " msg.chat.id = ", ctx.msg?.chat?.id)
   const message: string = ctx.message!.text!;
   if (message.indexOf("setQuestion:") != -1) {
     await set_question_preference(message, ctx);
